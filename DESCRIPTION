@@ -1,0 +1,20 @@
+Package: LSUx
+Title: Cut rDNA Sequences Into Domains Using Covariance Models
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Brendan",
+           family = "Furneaux",
+           role = c("aut", "cre"),
+           email = "brendan.furneaux@gmail.com",
+           comment = c(ORCID = "0000-0003-3522-7363"))
+Description: LSUx is a tool to extract domains from rDNA using covariance models
+    as implemented in the Infernal package.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    inferrnal,
+    dplyr,
+    tidyr,
+    stringr,
+    magrittr
