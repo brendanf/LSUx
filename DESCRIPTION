@@ -17,4 +17,13 @@ Imports:
     dplyr,
     tidyr,
     stringr,
-    magrittr
+    magrittr,
+    Biostrings,
+    methods,
+    futile.logger,
+    assertthat,
+    purrr,
+    tidyselect,
+    IRanges,
+    DECIPHER,
+    stringi
