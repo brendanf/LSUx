@@ -1,16 +1,60 @@
-#' @importFrom magrittr "%>%"
-`%>%`
+#' @importFrom magrittr "%>%" "%$%"
+#' @importFrom dplyr .data
+utils::globalVariables(c(".", "end", "start", "seq_from", "seq_to"))
 
 #### LSUx ####
 # functions to extract LSU and associated regions/domains from rRNA amplicons.
 # also includes file I/O for stockholm and clustal alignments with RNA secondary
 # structure information, as used by Infernal and Locarna.
 
+#' Repair poor 5.8S detection in ITSx results using Infernal results.
+#'
+#' The 3' end of the 5.8S RNA is quite variable, and it is sometimes not
+#' detected by the HMM used in ITSx.
+#' Using a CMs, Infernal is able to more reliably delimit 5.8S.
+#' This function uses the results of \code{\link[inferrnal]{cmsearch}} to
+#' fill in missing 5.8S annotations in ITSx results.  It also updates the end of
+#' ITS1 and beginning of ITS2 to match.
+#'
+#' @param itsx_result (\code{data.frame}) "positions" results from
+#'        \code{\link[rITSx]{itsx}}
+#' @param csearch_result (\code{data.frame}) results from
+#'        \code{\link[inferrnal]{cmsearch}} run on the same set of sequences,
+#'        using a 5.8S RNA model such as
+#'        \href{https://rfam.xfam.org/family/RF00002/cm}{RF00002}
+#'
+#' @return a \code{\link[tibble]{tibble}} in the same format output by
+#'   \code{\link[rITSx]{itsx}}, with updated positions for the boundaries of
+#'   5.8S.
+#' @export
+#'
+#' @examples
+#' # load sample data from inferrnal
+#' seqfile <- system.file(file.path("extdata", "sample.fasta"), package = "inferrnal")
+#' # ITSx has trouble with some of the reads
+#' seq <- Biostrings::readDNAStringSet(seqfile)[71:80]
+#' itsx_result <- rITSx::itsx(
+#'   in_file = seq,
+#'   positions = TRUE,
+#'   complement = FALSE,
+#'   cpu = 1,
+#'   read_function = Biostrings::readDNAStringSet
+#' )
+#' pos <- itsx_result$positions
+#' pos[pos$region == "5_8S",]
+#' # find 5.8S using cmsearch
+#' cm_5_8S <- system.file(file.path("extdata", "RF00002.cm"), package = "inferrnal")
+#' cm_result <- inferrnal::cmsearch(seq, cm = cm_5_8S, cpu = 1)
+#' # combine the results
+#' merge_pos <- merge_5_8S(pos, cm_result)
+#' merge_pos[merge_pos$region == "5_8S",]
 merge_5_8S <- function(itsx_result, csearch_result) {
-  csearch_result <- dplyr::select(csearch_result,
-                                  seq = target_name,
-                                  seq_from, seq_to) %>%
-    dplyr::mutate(region = "5_8S", seq = as.integer(seq))
+  csearch_result <- dplyr::select(
+    csearch_result,
+    seq = "target_name",
+    "seq_from", "seq_to"
+  ) %>%
+    dplyr::mutate(region = "5_8S")
 
   # CMsearch is better at finding 5.8S than ITSx is at finding anything,
   # so csearch_result probably has hits in sequences that did not pass ITSx.
@@ -21,99 +65,68 @@ merge_5_8S <- function(itsx_result, csearch_result) {
 
   # remove chimeras
   out <- out %>%
-    dplyr::filter(is.na(comment) |
-                    stringr::str_detect(comment, "Chimer", negate = TRUE)) %>%
-    dplyr::group_by(seq) %>%
-    dplyr::filter(sum(region == "5_8S") <= 1) %>%
+    dplyr::filter(
+      is.na(comment) |
+        stringr::str_detect(comment, "Chimer", negate = TRUE)
+    ) %>%
+    dplyr::group_by_at("seq") %>%
+    dplyr::filter(sum(.data$region == "5_8S") <= 1) %>%
     dplyr::ungroup()
 
   # find the location difference between the ITSx HMM and the Rfam CM
-  to_shift <- dplyr::filter(out, region == "5_8S") %$%
-    as.integer(median(end - seq_to, na.rm = TRUE))
-  from_shift <- dplyr::filter(out, region == "5_8S") %$%
-    as.integer(median(start - seq_from, na.rm = TRUE))
+  to_shift <- dplyr::filter(out, .data$region == "5_8S") %$%
+    as.integer(stats::median(end - seq_to, na.rm = TRUE))
+  from_shift <- dplyr::filter(out, .data$region == "5_8S") %$%
+    as.integer(stats::median(start - seq_from, na.rm = TRUE))
 
   # When ITSx didn't find 5.8S, use the adjusted CM location
   out <-
-    dplyr::mutate(out,
-                  start = dplyr::coalesce(start, pmax(seq_from + from_shift, 1L)),
-                  end = dplyr::coalesce(end, seq_to + to_shift))
+    dplyr::mutate(
+      out,
+      start = dplyr::coalesce(
+        .data$start,
+        pmax(.data$seq_from + from_shift, 1L)
+      ),
+      end = dplyr::coalesce(
+        .data$end,
+        .data$seq_to + to_shift
+      )
+    )
 
   # Adjust ITS1 end and ITS2 start to match
   # This involves switching to "wide" format
   # Also remove comments about missing 5.8S if 5.8S has been found.
-  out <- dplyr::full_join(dplyr::select(out, seq, length, comment, region, start) %>%
-                            tidyr::spread(key = "region", value = "start"),
-                          dplyr::select(out, seq, length, comment, region, end) %>%
-                            tidyr::spread(key = "region", value = "end"),
-                          by = c("seq", "length", "comment"),
-                          suffix = c("_start", "_end")) %>%
-    dplyr::mutate(ITS1_end = dplyr::coalesce(`5_8S_start` - 1L, ITS1_end),
-                  ITS1_start = dplyr::coalesce(ITS1_start, 1L),
-                  ITS2_start = dplyr::coalesce(`5_8S_end` + 1L, ITS2_start),
-                  comment = ifelse(is.na(`5_8S_start`) | is.na(`5_8S_end`),
-                                   comment,
-                                   stringr::str_replace(comment,
-                                                        "[^!]*5.8S[^!]*! *",
-                                                        "")) %>%
-                    dplyr::na_if(""))
+  out <- dplyr::full_join(
+    dplyr::select(out, "seq", "length", "comment", "region", "start") %>%
+      tidyr::spread(key = "region", value = "start"),
+    dplyr::select(out, "seq", "length", "comment", "region", "end") %>%
+      tidyr::spread(key = "region", value = "end"),
+    by = c("seq", "length", "comment"),
+    suffix = c("_start", "_end")
+  ) %>%
+    dplyr::mutate(
+      ITS1_end = dplyr::coalesce(.data$`5_8S_start` - 1L, .data$ITS1_end),
+      ITS1_start = dplyr::coalesce(.data$ITS1_start, 1L),
+      ITS2_start = dplyr::coalesce(.data$`5_8S_end` + 1L, .data$ITS2_start),
+      comment = ifelse(
+        is.na(.data$`5_8S_start`) | is.na(.data$`5_8S_end`),
+        .data$comment,
+        stringr::str_replace(.data$comment, "[^!]*5.8S[^!]*! *", "")
+      ) %>%
+        dplyr::na_if("")
+    )
   # Switch back to "long" format
   out <-
-    dplyr::full_join(dplyr::select(out, seq, length, comment, ends_with("_start")) %>%
-                       dplyr::rename_all(stringr::str_replace, "_start", "") %>%
-                       tidyr::gather(key = "region", value = "start", -(1:3)),
-                     dplyr::select(out, seq, length, comment, ends_with("_end")) %>%
-                       dplyr::rename_all(stringr::str_replace, "_end", "") %>%
-                       tidyr::gather(key = "region", value = "end", -(1:3)),
-                     by = c("seq", "length", "comment", "region"))
+    dplyr::full_join(
+      dplyr::select(out, "seq", "length", "comment", tidyselect::ends_with("_start")) %>%
+        dplyr::rename_all(stringr::str_replace, "_start", "") %>%
+        tidyr::gather(key = "region", value = "start", -(1:3)),
+      dplyr::select(out, "seq", "length", "comment", tidyselect::ends_with("_end")) %>%
+        dplyr::rename_all(stringr::str_replace, "_end", "") %>%
+        tidyr::gather(key = "region", value = "end", -(1:3)),
+      by = c("seq", "length", "comment", "region")
+    )
 
-  out
-}
-
-read_stockholm_rf <- function(stockholm) {
-  assertthat::assert_that((assertthat::is.string(stockholm) &&
-                             file.exists(stockholm)) ||
-                            methods::is(stockholm, "connection"))
-  f <- function(x, pos, acc) {
-    stringr::str_match(x, "#=GC +RF +(.+)")[,2] %>%
-      na.omit() %>%
-      paste(collapse = "")
-  }
-  readr::read_lines_chunked(stockholm,
-                            readr::AccumulateCallback$new(f, acc = ""))
-}
-
-
-parse_stockholm_msa_chunk <- function(x, pos, acc) {
-
-  gc <- stringr::str_match(x, "#=GC +([^ ]+) +(.+)")[,2:3]
-  gc <- gc[complete.cases(gc), , drop = FALSE]
-  for (i in seq_len(nrow(gc))) {
-    attr(acc, gc[i,1]) <- paste0(attr(acc, gc[i,1]), gc[i,2])
-  }
-
-  x <- stringr::str_match(x, "^(\\d+\\|)?([^#][^ ]*) +([^ ]+)$")[,3:4]
-  x <- x[complete.cases(x), , drop = FALSE]
-  for (i in seq_len(nrow(x))) {
-    if (x[i,1] %in% names(acc)) {
-      acc[[x[i,1]]] <- paste0(acc[[x[i,1]]], x[i,2])
-    } else {
-      acc[[x[i,1]]] <- x[i,2]
-    }
-  }
-  acc
-}
-
-read_stockholm_msa <- function(stockholm) {
-  assertthat::assert_that((assertthat::is.string(stockholm) &&
-                             file.exists(stockholm)) ||
-                            methods::is(stockholm, "connection"))
-
-  seqs <-
-    readr::read_lines_chunked(stockholm,
-                              readr::AccumulateCallback$new(parse_stockholm_msa_chunk, acc = list()))
-  out <- attributes(seqs)
-  out[["alignment"]] <- Biostrings::RNAMultipleAlignment(unlist(seqs))
   out
 }
 
@@ -142,12 +155,16 @@ map_position.character <- function(alignment, x) {
 }
 
 extract_rf_region <- function(rf, n, names) {
-  assertthat::assert_that(assertthat::is.string(rf),
-                          is.character(n),
-                          all(nchar(n) == 1))
+  assertthat::assert_that(
+    assertthat::is.string(rf),
+    is.character(n),
+    all(nchar(n) == 1)
+  )
   if (!missing(names)) {
-    assertthat::assert_that(is.character(names),
-                            length(names) == length(n))
+    assertthat::assert_that(
+      is.character(names),
+      length(names) == length(n)
+    )
   }
   out <- stringr::str_locate(rf, paste0(n, ".*", n))
   if (!missing(names)) {
@@ -162,14 +179,6 @@ gap_free_width <- function(x, gapchars = ".-") {
   assertthat::assert_that(methods::is(x, "XStringSet"))
   Biostrings::width(x) - c(Biostrings::letterFrequency(x, gapchars))
 }
-
-# extract_LSU <- function(stockholm, include_incomplete = FALSE) {
-#   assertthat::assert_that(assertthat::is.string(stockholm),
-#                           assertthat::is.readable(stockholm))
-#
-#   aln <- read_stockholm_msa(stockholm)
-#   rf <- aln$RF
-#   aln <- aln$alignment
 
 extract_LSU <- function(aln, rf, include_incomplete = FALSE, ...) {
   UseMethod("extract_LSU")
@@ -190,11 +199,15 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
                                  seq_name = names(aln),
                                  length = gap_free_width(aln),
                                  ...) {
-  limits <- extract_rf_region(rf, c(1:9, LETTERS[1:10]),
-                              c("5_8S", paste0("LSU", 1:18)))
+  limits <- extract_rf_region(
+    rf, c(1:9, LETTERS[1:10]),
+    c("5_8S", paste0("LSU", 1:18))
+  )
 
-  outhead <- tibble::tibble(seq_name = seq_name,
-                            length = length)
+  outhead <- tibble::tibble(
+    seq_name = seq_name,
+    length = length
+  )
 
   out <- tibble::tibble(.rows = nrow(outhead))
 
@@ -205,7 +218,8 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
     out[[startcol]] <- map_position(aln, limits[region, "start"])
     out[[endcol]] <- map_position(aln, limits[region, "end"])
 
-    out_of_range <- out[[startcol]] >= outhead$length & out[[endcol]] >= outhead$length
+    out_of_range <- out[[startcol]] >= outhead$length &
+      out[[endcol]] >= outhead$length
     out[[startcol]] <- ifelse(out_of_range, NA_integer_, out[[startcol]])
     out[[endcol]] <- ifelse(out_of_range, NA_integer_, out[[endcol]])
   }
@@ -218,24 +232,46 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
     if (isTRUE(include_incomplete) ||
         any(!is.na(out[[prename]]) & !is.na(out[[postname]]))) {
       zerosize <- out[[postname]] - out[[prename]] == 1L
-      out[[paste0("V", i, "_start")]] <- ifelse(zerosize, NA_integer_,
-                                                out[[prename]] + 1L)
-      out[[paste0("V", i, "_end")]] <- ifelse(zerosize, NA_integer_,
-                                              out[[postname]] - 1L)
+      out[[paste0("V", i, "_start")]] <- ifelse(
+        zerosize,
+        NA_integer_,
+        out[[prename]] + 1L
+      )
+      out[[paste0("V", i, "_end")]] <- ifelse(
+        zerosize,
+        NA_integer_,
+        out[[postname]] - 1L
+      )
     }
   }
   out <- purrr::discard(out, ~all(is.na(.)))
-  out <- out[order(apply(out, 2, median, na.rm = TRUE))]
+  out <- out[order(apply(out, 2, stats::median, na.rm = TRUE))]
   dplyr::bind_cols(outhead, out)
 }
 
 gather_regions <- function(pos) {
   starts <- dplyr::select(pos, -tidyselect::ends_with("_end"))
-  starts <- tidyr::gather(starts, key = "region", value = "start", tidyselect::ends_with("_start"))
-  starts <- dplyr::mutate_at(starts, "region", stringr::str_replace, "_start$", "")
+  starts <- tidyr::gather(
+    starts,
+    key = "region",
+    value = "start",
+    tidyselect::ends_with("_start")
+  )
+  starts <- dplyr::mutate_at(
+    starts,
+    "region",
+    stringr::str_replace,
+    "_start$",
+    ""
+  )
 
   ends <- dplyr::select(pos, -tidyselect::ends_with("_start"))
-  ends <- tidyr::gather(ends, key = "region", value = "end", tidyselect::ends_with("_end"))
+  ends <- tidyr::gather(
+    ends,
+    key = "region",
+    value = "end",
+    tidyselect::ends_with("_end")
+  )
   ends <- dplyr::mutate_at(ends, "region", stringr::str_replace, "_end$", "")
 
   hvars <- names(pos)
@@ -249,7 +285,7 @@ gather_regions <- function(pos) {
 spread_regions <- function(pos) {
   hvars <- setdiff(names(pos), c("region", "start", "end"))
 
-  starts <- dplyr::select(pos, -end)
+  starts <- dplyr::select(pos, -"end")
   starts <- dplyr::mutate_at(starts, "region", paste0, "_start")
   starts <- tidyr::spread(starts, key = "region", value = "start")
 
@@ -260,61 +296,190 @@ spread_regions <- function(pos) {
   out <- dplyr::full_join(starts, ends, by = hvars)
   outhead <- out[hvars]
   outvals <- dplyr::select(out, -!!hvars)
-  outvals <- outvals[order(apply(outvals, 2, median))]
+  outvals <- outvals[order(apply(outvals, 2, stats::median))]
   dplyr::bind_cols(outhead, outvals)
 }
 
 
-LSUx <- function(seq, cm_5.8S, cm_32S, glocal = TRUE, ITS1 = FALSE, cpu) {
-  assertthat::assert_that(assertthat::is.readable(cm_5.8S),
-                          assertthat::is.readable(cm_32S),
-                          assertthat::is.flag(glocal),
-                          assertthat::is.flag(ITS1))
+#' Extract variable/conserved domains from LSU rDNA
+#'
+#' Extracts alternating variable and conserved domains from the contiguous rDNA
+#' regions which form the eukaryotic ribosomal large subunit,  i.e. 5.8S RNA,
+#' ITS2, and 28S RNA. For the purposes of this document, this region will be
+#' referred to as the 32S precursor RNA, as in humans, although its actual size
+#' in Svedberg units varies between lineages.
+#'
+#' Input sequences should contain, at a minimum, a significant fraction of the
+#' 5.8S RNA, which is used to define the 5' end of 32S. Any base pairs before
+#' the 5' end of 5.8S will be considered to be ITS1 (\code{ITS1 = TRUE}) or
+#' discarded (\code{ITS1 = FALSE}).  Input sequences should not extend past the
+#' end of the 32S model at the 3' end.
+#'
+#' LSUx requires two covariance models: one for 5.8S, which is used in
+#' \code{\link[inferrnal]{cmsearch}}, and one for 32S, which is used in
+#' \code{\link[inferrnal]{cmalign}}.
+#'
+#' The 5.8S model can be
+#' \href{https://rfam.xfam.org/family/RF00002}{RF00002 from Rfam} (the default),
+#' or an equivalent.  It must be calibrated using \code{cmcalibrate} from
+#' Infernal.
+#'
+#' The 32S model must include annotations in the reference line ("#=GC RF" in
+#' the seed alignment) to distinguish conserved and variable regions. The
+#' annotations should be sequential characters in the range \code{"1..9A..Z"}
+#' for conserved domains, \code{"v"} for variable domains, and \code{"."} for
+#' unaligned gaps in the seed alignment.
+#' In the output, the conserved domains will be named "5_8S", "LSU1", "LSU2",
+#' ...; the variable domains will be named "ITS2", "V1", "V2", ...
+#'
+#' Two example models are included,
+#' both based on the
+#' \href{https://github.com/rdpstaff/fungene_pipeline/blob/ master/resources/RRNA_28S/model.cm}{RDP fungal LSU CM}, and annotated with variable regions
+#' according to Raué (1988).
+#' The first, \code{system.file(file.path("extdata", "fungal_32S.cm"),
+#' package = "LSUx")}, includes the full LSU region.  The second,
+#' \code{system.file(file.path("extdata", "fungal_32S_LR5.cm"),
+#' package = "LSUx")}, is truncated at the binding site of the LR5 primer, and
+#' should be faster for input sequences which do not extend past that point.
+#' The seed alignments are also provided.
+#'
+#' If generating similar truncated alignments with different endpoints, it is
+#' critical to remove unpaired secondary structure elements from the
+#' \code{"#=GC SS_cons"} line of the seed alignment.
+#'
+#' @param seq (filename readable by Infernal,
+#'  \code{\link[Biostrings]{XStringSet}}, or \code{character} vector) sequences
+#'  to extract regions from
+#' @param cm_5.8S (filename) covariance model for 5.8S rRNA
+#' @param cm_32S (filename) covariance model for 32S pre-rRNA (5.8S, ITS2, and LSU)
+#' @param glocal (\code{logical} scalar) if \code{TRUE}, use glocal alignment in
+#'  \code{\link[inferrnal]{cmalign}}
+#' @param ITS1 (\code{logical} scalar) if \code{TRUE}, include sequence fragment
+#'  before 5.8S (if any) as ITS1
+#' @param cpu (\code{integer} scalar) number of threads to use in Infernal calls
+#'
+#' @return a \code{\link[tibble]{tibble}} with one row for each input sequence.
+#'  The columns are: \describe{
+#'  \item{\code{seq_name} (\code{character})}{ the sequence name from \code{seq}}
+#'  \item{\code{length} (\code{integer})}{ the length of the sequence in base pairs}
+#'  \item{\code{*_start} (\code{integer})}{for each domain found in any of the
+#'    sequences, the starting base for that domain in this sequence. \code{"*"}
+#'    can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"}, \code{"V2"},
+#'    \code{"LSU2"}, \code{"V3"}, etc.}
+#'  \item{\code{*_end} (\code{integer})}{as \code{*_start}, but giving the end base for
+#'    each domain.}}
+#' @export
+#'
+#' @examples
+#' # the sample data was amplified with primers ITS1 and LR5, so the truncated
+#' # cm is appropriate.
+#' seq <- system.file("extdata/sample.fasta", package = "inferrnal")
+#' cm_32S_trunc <- system.file(file.path("extdata", "fungi_32S_LR5.cm"), package = "LSUx")
+#' lsux(seq, cm_32S = cm_32S_trunc, ITS1 = TRUE, cpu = 1)
+lsux <- function(
+  seq,
+  cm_5.8S = system.file(
+    file.path("extdata", "RF00002.cm"),
+    package = "inferrnal"
+  ),
+  cm_32S = system.file(
+    file.path("extdata", "fungi_32S.cm"),
+    package = "LSUx"
+  ),
+  glocal = TRUE,
+  ITS1 = FALSE,
+  cpu
+) {
+  assertthat::assert_that(
+    assertthat::is.readable(cm_5.8S),
+    assertthat::is.readable(cm_32S),
+    assertthat::is.flag(glocal),
+    assertthat::is.flag(ITS1)
+  )
 
   futile.logger::flog.info("Beginning CM search.", name = "LSUx")
-  cms <- cmsearch(cm = cm_5.8S, seq = seq, glocal = glocal, cpu = cpu)
+  cms <- inferrnal::cmsearch(cm = cm_5.8S, seq = seq, glocal = glocal, cpu = cpu)
 
   # remove multiple hits
-  cms <- dplyr::group_by(cms, target_name)
-  cms <- dplyr::filter(cms, all(inc == "?") | inc == "!")
+  cms <- dplyr::group_by_at(cms, "target_name")
+  cms <- dplyr::filter(cms, all(.data$inc == "?") | .data$inc == "!")
   cms <- dplyr::filter(cms, dplyr::n() == 1)
   cms <- dplyr::ungroup(cms)
-  futile.logger::flog.info("%d sequences contained a single 5.8S hit.", nrow(cms),
-                           name = "LSUx")
+  futile.logger::flog.info(
+    "%d sequences contained a single 5.8S hit.", nrow(cms),
+    name = "LSUx"
+  )
+  if (is.character(seq)) {
+    if (length(seq) == 1 && file.exists(seq)) {
+      seq <- Biostrings::readBStringSet(seq)
+    }
+    else {
+      seq <- Biostrings::BStringSet(seq)
+    }
+    abc <- Biostrings::uniqueLetters(seq)
+    if (all(abc %in% Biostrings::DNA_ALPHABET)) {
+      seq <- Biostrings::DNAStringSet(seq)
+      seq <- Biostrings::RNAStringSet(seq)
+    } else if (all(abc %in% Biostrings::RNA_ALPHABET)) {
+      seq <- Biostrings::RNAStringSet(seq)
+    } else stop("Sequence alphabet should be DNA or RNA LSUx.")
+  }
   seq_32S <- IRanges::narrow(seq[cms$target_name], start = cms$seq_from)
 
   futile.logger::flog.info("Beginning CM alignment.", name = "LSUx")
-  aln <- cmalign(cmfile = cm_32S, seq = seq_32S, glocal = glocal, cpu = cpu)
+  aln <- inferrnal::cmalign(
+    cmfile = cm_32S,
+    seq = seq_32S,
+    glocal = glocal,
+    cpu = cpu
+  )
 
   futile.logger::flog.info("Extracting LSU regions.", name = "LSUx")
   pos <- extract_LSU(aln = aln$alignment, rf = aln$RF)
-  pos <- dplyr::mutate_at(pos, "seq_name", stringr::str_replace, "^[^|]*\\|", "")
+  pos <- dplyr::mutate_at(
+    pos,
+    "seq_name",
+    stringr::str_replace,
+    "^[^|]*\\|",
+    ""
+  )
   pos <- dplyr::mutate_if(pos, is.integer, '+', cms$seq_from - 1L)
   if (isTRUE(ITS1)) {
     no_ITS1 <- pos$`5_8S_start` == 1 | is.na(pos$`5_8S_start`)
     if (all(no_ITS1)) {
-      futile.logger::flog.warn("ITS1 annotation was requested, but no bases before 5.8S were found.",
-                               name = "LSUx")
+      futile.logger::flog.warn(
+        "ITS1 annotation was requested, but no bases before 5.8S were found.",
+        name = "LSUx"
+      )
     } else {
       pos$ITS1_start <- ifelse(no_ITS1, NA_integer_, 1L)
       pos$ITS1_end <- ifelse(no_ITS1, NA_integer_, pos$`5_8S_start` - 1L)
-      pos <- dplyr::select(pos, seq_name, length, ITS1_start, ITS1_end,
-                           dplyr::everything())
+      pos <- dplyr::select(
+        pos,
+        "seq_name",
+        "length",
+        "ITS1_start",
+        "ITS1_end",
+        dplyr::everything()
+      )
     }
   }
   pos
 }
 
-write_clustalw_ss <- function(aln, sec_str, file, ref = sec_str, seq_names = names(aln), write_ref = TRUE) {
+write_clustalw_ss <- function(aln, sec_str, file, ref = sec_str,
+                              seq_names = names(aln), write_ref = TRUE) {
   assertthat::assert_that(methods::is(aln, "XStringSet"))
-  assertthat::assert_that(is.character(seq_names),
-                          length(seq_names) == length(aln),
-                          assertthat::is.string(file),
-                          assertthat::is.string(sec_str),
-                          assertthat::is.string(ref),
-                          assertthat::is.flag(write_ref),
-                          all(nchar(sec_str) == Biostrings::width(aln)),
-                          nchar(sec_str) == nchar(ref))
+  assertthat::assert_that(
+    is.character(seq_names),
+    length(seq_names) == length(aln),
+    assertthat::is.string(file),
+    assertthat::is.string(sec_str),
+    assertthat::is.string(ref),
+    assertthat::is.flag(write_ref),
+    all(nchar(sec_str) == Biostrings::width(aln)),
+    nchar(sec_str) == nchar(ref)
+  )
 
   aln <- Biostrings::RNAStringSet(aln)
   sec_str <- chartr("{[<>]},:_-", "((())).x..", sec_str)
@@ -340,13 +505,13 @@ write_clustalw_ss <- function(aln, sec_str, file, ref = sec_str, seq_names = nam
 
 parse_clustal_ss_chunk <- function(x, pos, acc) {
   ss <- stringr::str_match(x, "#S *([()\\[\\]{}<>.,:_x-]+) ?\\d*$")
-  ss <- ss[complete.cases(ss), , drop = FALSE]
+  ss <- ss[stats::complete.cases(ss), , drop = FALSE]
   for (i in seq_len(nrow(ss))) {
     attr(acc, "SS_cons") <- paste0(attr(acc, "SS_cons"), ss[i, 2])
   }
 
   x <- stringr::str_match(x, "^([^# ][^ ]*) +([^ ]+) *\\d*$")[,2:3]
-  x <- x[complete.cases(x), , drop = FALSE]
+  x <- x[stats::complete.cases(x), , drop = FALSE]
   for (i in seq_len(nrow(x))) {
     if (x[i,1] %in% names(acc)) {
       acc[[x[i,1]]] <- paste0(acc[[x[i,1]]], x[i,2])
@@ -382,8 +547,8 @@ remove_nonconsensus_nongaps <- function(aln, gapfrac = 1) {
     unclass() %>%
     tibble::as_tibble() %>%
     dplyr::mutate(
-      end = cumsum(lengths),
-      start = end - lengths + 1
+      end = cumsum(.data$lengths),
+      start = .data$end - .data$lengths + 1
     ) %>%
     # take only the consensus values
     dplyr::filter(!.data$values) %>%
@@ -409,7 +574,10 @@ trim_LSU_intron <- function(aln) {
     ambiguity = FALSE
   )
   consensus <- as.character(consensus)
-  site <- stringi::stri_locate_first_fixed(consensus, "CAAAUUUGGGUAUAG")[1, 'end']
+  site <- stringi::stri_locate_first_fixed(
+    consensus,
+    "CAAAUUUGGGUAUAG"
+  )[1, 'end']
   IRanges::narrow(aln, start = 1, end = site)
 }
 
@@ -418,7 +586,7 @@ region_concat <- function(table, out_col, regions, key_col = NULL) {
   table[[out_col]] <- dplyr::coalesce(
     do.call(stringr::str_c, table[,regions]),
     table[[out_col]]
-    )
+  )
   if (!is.null(key_col)) {
     table[[out_col]] <- ifelse(
       stringi::stri_detect_fixed(table[[out_col]], table[[key_col]]),
