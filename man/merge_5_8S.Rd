@@ -30,20 +30,26 @@ ITS1 and beginning of ITS2 to match.
 }
 \examples{
 # load sample data from inferrnal
-seqfile <- system.file(file.path("extdata", "sample.fasta"), package = "inferrnal")
+seqfile <- system.file(
+    file.path("extdata", "sample.fasta"),
+    package = "inferrnal"
+)
 # ITSx has trouble with some of the reads
-seq <- Biostrings::readDNAStringSet(seqfile)[71:80]
+seq <- Biostrings::readDNAStringSet(seqfile)[c(1,4,20,32,33,43,46,49)]
 itsx_result <- rITSx::itsx(
-  in_file = seq,
-  positions = TRUE,
-  complement = FALSE,
-  cpu = 1,
-  read_function = Biostrings::readDNAStringSet
+    in_file = seq,
+    positions = TRUE,
+    complement = FALSE,
+    cpu = 1,
+    read_function = Biostrings::readDNAStringSet
 )
 pos <- itsx_result$positions
 pos[pos$region == "5_8S",]
 # find 5.8S using cmsearch
-cm_5_8S <- system.file(file.path("extdata", "RF00002.cm"), package = "inferrnal")
+cm_5_8S <- system.file(
+    file.path("extdata", "RF00002.cm"),
+    package = "inferrnal"
+)
 cm_result <- inferrnal::cmsearch(seq, cm = cm_5_8S, cpu = 1)
 # combine the results
 merge_pos <- merge_5_8S(pos, cm_result)

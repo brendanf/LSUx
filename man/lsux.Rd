@@ -20,7 +20,8 @@ to extract regions from}
 
 \item{cm_5.8S}{(filename) covariance model for 5.8S rRNA}
 
-\item{cm_32S}{(filename) covariance model for 32S pre-rRNA (5.8S, ITS2, and LSU)}
+\item{cm_32S}{(filename) covariance model for 32S pre-rRNA
+(5.8S, ITS2, and LSU)}
 
 \item{glocal}{(\code{logical} scalar) if \code{TRUE}, use glocal alignment in
 \code{\link[inferrnal]{cmalign}}}
@@ -33,14 +34,16 @@ before 5.8S (if any) as ITS1}
 \value{
 a \code{\link[tibble]{tibble}} with one row for each input sequence.
  The columns are: \describe{
- \item{\code{seq_name} (\code{character})}{ the sequence name from \code{seq}}
- \item{\code{length} (\code{integer})}{ the length of the sequence in base pairs}
+ \item{\code{seq_name} (\code{character})}{ the sequence name from
+     \code{seq}}
+ \item{\code{length} (\code{integer})}{ the length of the sequence in base
+      pairs}
  \item{\code{*_start} (\code{integer})}{for each domain found in any of the
    sequences, the starting base for that domain in this sequence. \code{"*"}
    can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"}, \code{"V2"},
    \code{"LSU2"}, \code{"V3"}, etc.}
- \item{\code{*_end} (\code{integer})}{as \code{*_start}, but giving the end base for
-   each domain.}}
+ \item{\code{*_end} (\code{integer})}{as \code{*_start}, but giving the end
+     base for each domain.}}
 }
 \description{
 Extracts alternating variable and conserved domains from the contiguous rDNA
@@ -75,8 +78,9 @@ In the output, the conserved domains will be named "5_8S", "LSU1", "LSU2",
 
 Two example models are included,
 both based on the
-\href{https://github.com/rdpstaff/fungene_pipeline/blob/ master/resources/RRNA_28S/model.cm}{RDP fungal LSU CM}, and annotated with variable regions
-according to Raué (1988).
+\href{https://github.com/rdpstaff/fungene_pipeline/blob/%
+master/resources/RRNA_28S/model.cm}{RDP fungal LSU CM},
+and annotated with variable regions according to Raué (1988).
 The first, \code{system.file(file.path("extdata", "fungal_32S.cm"),
 package = "LSUx")}, includes the full LSU region.  The second,
 \code{system.file(file.path("extdata", "fungal_32S_LR5.cm"),
@@ -92,6 +96,9 @@ critical to remove unpaired secondary structure elements from the
 # the sample data was amplified with primers ITS1 and LR5, so the truncated
 # cm is appropriate.
 seq <- system.file("extdata/sample.fasta", package = "inferrnal")
-cm_32S_trunc <- system.file(file.path("extdata", "fungi_32S_LR5.cm"), package = "LSUx")
+cm_32S_trunc <- system.file(
+    file.path("extdata", "fungi_32S_LR5.cm"),
+    package = "LSUx"
+)
 lsux(seq, cm_32S = cm_32S_trunc, ITS1 = TRUE, cpu = 1)
 }
