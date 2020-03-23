@@ -3,6 +3,10 @@
 
 <!-- badges: start -->
 
+[![Travis build
+status](https://travis-ci.org/brendanf/LSUx.svg?branch=master)](https://travis-ci.org/brendanf/LSUx)
+[![Codecov test
+coverage](https://codecov.io/gh/brendanf/LSUx/branch/master/graph/badge.svg)](https://codecov.io/gh/brendanf/LSUx?branch=master)
 <!-- badges: end -->
 
 Cut rDNA sequences into domains using covariance models
@@ -114,10 +118,10 @@ for each sequence.
 regions <- lsux(seq, cm_32S = cm_32S_trunc, ITS1 = TRUE, cpu = 1)
 ```
 
-    ## INFO [2020-03-23 17:51:40] Beginning CM search.
-    ## INFO [2020-03-23 17:51:41] 48 sequences contained a single 5.8S hit.
-    ## INFO [2020-03-23 17:51:43] Beginning CM alignment.
-    ## INFO [2020-03-23 17:51:55] Extracting LSU regions.
+    ## INFO [2020-03-23 18:18:17] Beginning CM search.
+    ## INFO [2020-03-23 18:18:20] 48 sequences contained a single 5.8S hit.
+    ## INFO [2020-03-23 18:18:24] Beginning CM alignment.
+    ## INFO [2020-03-23 18:18:53] Extracting LSU regions.
 
 ``` r
 regions

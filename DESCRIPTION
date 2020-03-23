@@ -32,7 +32,8 @@ Imports:
 Suggests:
     rITSx,
     knitr,
-    rmarkdown
+    rmarkdown,
+    covr
 RoxygenNote: 7.0.2
 biocViews:
     SequenceMatching,
@@ -45,3 +46,4 @@ biocViews:
     Alignment,
     MultipleSequenceAlignment
 VignetteBuilder: knitr
+Remotes: brendanf/inferrnal
