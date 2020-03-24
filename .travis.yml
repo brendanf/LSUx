@@ -2,6 +2,12 @@
 
 language: R
 cache: packages
-apt-packages: infernal
+apt-packages:
+  - infernal
+  - hmmer
+before_script:
+  - wget https://microbiology.se/sw/ITSx_1.1.2.tar.gz -O /tmp/ITSx.tar.gz
+  - tar -xvf /tmp/ITSx.tar.gz
+  - export PATH=$PATH:$PWD/ITSx_1.1.2
 after_success:
   - Rscript -e 'covr::codecov()'
