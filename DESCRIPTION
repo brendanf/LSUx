@@ -46,4 +46,6 @@ biocViews:
     Alignment,
     MultipleSequenceAlignment
 VignetteBuilder: knitr
-Remotes: brendanf/inferrnal
+Remotes:
+    brendanf/inferrnal
+    brendanf/rITSx
