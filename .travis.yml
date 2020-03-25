@@ -7,7 +7,7 @@ apt-packages:
   - hmmer
 before_script:
   - wget https://microbiology.se/sw/ITSx_1.1.2.tar.gz -O /tmp/ITSx.tar.gz
-  - tar -xvf /tmp/ITSx.tar.gz
-  - export PATH=$PATH:$PWD/ITSx_1.1.2
+  - tar -xvf /tmp/ITSx.tar.gz -C /tmp
+  - export PATH=$PATH:/tmp/ITSx_1.1.2
 after_success:
   - Rscript -e 'covr::codecov()'
