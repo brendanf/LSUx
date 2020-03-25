@@ -352,8 +352,7 @@ spread_regions <- function(pos) {
 #'
 #' Two example models are included,
 #' both based on the
-#' \href{https://github.com/rdpstaff/fungene_pipeline/blob/%
-#' master/resources/RRNA_28S/model.cm}{RDP fungal LSU CM},
+#' \href{https://github.com/rdpstaff/fungene_pipeline/blob/master/resources/RRNA_28S/model.cm}{RDP fungal LSU CM},
 #' and annotated with variable regions according to Raué (1988).
 #' The first, \code{system.file(file.path("extdata", "fungal_32S.cm"),
 #' package = "LSUx")}, includes the full LSU region.  The second,
