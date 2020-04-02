@@ -453,7 +453,13 @@ lsux <- function(
             seq <- Biostrings::RNAStringSet(seq)
         } else stop("Sequence alphabet should be DNA or RNA LSUx.")
     }
-    seq_32S <- IRanges::narrow(seq[cms$target_name], start = cms$seq_from)
+    seqnames <- if (methods::is(seq, "ShortRead")) {
+      as.character(ShortRead::id(seq))
+    } else (
+      names(seq)
+    )
+    seq_idx <- match(cms$target_name, seqnames)
+    seq_32S <- IRanges::narrow(seq[seq_idx], start = cms$seq_from)
 
     futile.logger::flog.info("Beginning CM alignment.", name = "LSUx")
     aln <- inferrnal::cmalign(
