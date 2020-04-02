@@ -67,7 +67,7 @@ merge_5_8S <- function(itsx_result, csearch_result) {
     # We don't have a comparable alternative to find LSU (it is so long that the
     # CM is much slower) so for now ignore those.
     out <- dplyr::full_join(itsx_result, csearch_result,
-                            by = c("seq", "region"))
+                            by = c("seq_id", "region"))
 
     # remove chimeras
     out <- out %>%
@@ -75,7 +75,7 @@ merge_5_8S <- function(itsx_result, csearch_result) {
             is.na(comment) |
                 stringr::str_detect(comment, "Chimer", negate = TRUE)
         ) %>%
-        dplyr::group_by_at("seq") %>%
+        dplyr::group_by_at("seq_id") %>%
         dplyr::filter(sum(.data$region == "5_8S") <= 1) %>%
         dplyr::ungroup()
 
@@ -103,11 +103,11 @@ merge_5_8S <- function(itsx_result, csearch_result) {
     # This involves switching to "wide" format
     # Also remove comments about missing 5.8S if 5.8S has been found.
     out <- dplyr::full_join(
-        dplyr::select(out, "seq", "length", "comment", "region", "start") %>%
+        dplyr::select(out, "seq_id", "length", "comment", "region", "start") %>%
             tidyr::spread(key = "region", value = "start"),
-        dplyr::select(out, "seq", "length", "comment", "region", "end") %>%
+        dplyr::select(out, "seq_id", "length", "comment", "region", "end") %>%
             tidyr::spread(key = "region", value = "end"),
-        by = c("seq", "length", "comment"),
+        by = c("seq_id", "length", "comment"),
         suffix = c("_start", "_end")
     ) %>%
         dplyr::mutate(
@@ -133,15 +133,15 @@ merge_5_8S <- function(itsx_result, csearch_result) {
     # Switch back to "long" format
     out <-
         dplyr::full_join(
-            dplyr::select(out, "seq", "length", "comment",
+            dplyr::select(out, "seq_id", "length", "comment",
                             tidyselect::ends_with("_start")) %>%
                 dplyr::rename_all(stringr::str_replace, "_start", "") %>%
                 tidyr::gather(key = "region", value = "start", -(seq.int(3))),
-            dplyr::select(out, "seq", "length", "comment",
+            dplyr::select(out, "seq_id", "length", "comment",
                             tidyselect::ends_with("_end")) %>%
                 dplyr::rename_all(stringr::str_replace, "_end", "") %>%
                 tidyr::gather(key = "region", value = "end", -(seq.int(3))),
-            by = c("seq", "length", "comment", "region")
+            by = c("seq_id", "length", "comment", "region")
         )
 
     out
@@ -208,13 +208,13 @@ extract_LSU.MultipleAlignment <-
         aln = as.character(aln@unmasked),
         rf = rf,
         include_incomplete = include_incomplete,
-        seq_name = names(aln@unmasked),
+        seq_id = names(aln@unmasked),
         ...
     )
 }
 
 extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
-                                    seq_name = names(aln),
+                                    seq_id = names(aln),
                                     length = gap_free_width(aln),
                                     ...) {
     limits <- extract_rf_region(
@@ -223,7 +223,7 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
     )
 
     outhead <- tibble::tibble(
-        seq_name = seq_name,
+        seq_id = seq_id,
         length = length
     )
 
@@ -379,7 +379,7 @@ spread_regions <- function(pos) {
 #'
 #' @return a \code{\link[tibble]{tibble}} with one row for each input sequence.
 #'  The columns are: \describe{
-#'  \item{\code{seq_name} (\code{character})}{ the sequence name from
+#'  \item{\code{seq_id} (\code{character})}{ the sequence name from
 #'      \code{seq}}
 #'  \item{\code{length} (\code{integer})}{ the length of the sequence in base
 #'       pairs}
@@ -473,7 +473,7 @@ lsux <- function(
     pos <- extract_LSU(aln = aln$alignment, rf = aln$RF)
     pos <- dplyr::mutate_at(
         pos,
-        "seq_name",
+        "seq_id",
         stringr::str_replace,
         "^[^|]*\\|",
         ""
@@ -492,7 +492,7 @@ lsux <- function(
             pos$ITS1_end <- ifelse(no_ITS1, NA_integer_, pos$`5_8S_start` - 1L)
             pos <- dplyr::select(
                 pos,
-                "seq_name",
+                "seq_id",
                 "length",
                 "ITS1_start",
                 "ITS1_end",

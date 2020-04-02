@@ -34,7 +34,7 @@ before 5.8S (if any) as ITS1}
 \value{
 a \code{\link[tibble]{tibble}} with one row for each input sequence.
  The columns are: \describe{
- \item{\code{seq_name} (\code{character})}{ the sequence name from
+ \item{\code{seq_id} (\code{character})}{ the sequence name from
      \code{seq}}
  \item{\code{length} (\code{integer})}{ the length of the sequence in base
       pairs}
