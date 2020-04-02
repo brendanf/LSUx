@@ -30,7 +30,7 @@ Imports:
     tidyselect,
     utils
 Suggests:
-    rITSx,
+    rITSx (>= 0.0.5),
     knitr,
     rmarkdown,
     covr
