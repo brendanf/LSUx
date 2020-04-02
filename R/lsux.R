@@ -57,7 +57,7 @@ utils::globalVariables(c(".", "end", "start", "seq_from", "seq_to"))
 merge_5_8S <- function(itsx_result, csearch_result) {
     csearch_result <- dplyr::select(
         csearch_result,
-        seq = "target_name",
+        seq_id = "target_name",
         "seq_from", "seq_to"
     ) %>%
         dplyr::mutate(region = "5_8S")
