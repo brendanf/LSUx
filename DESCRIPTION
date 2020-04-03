@@ -16,6 +16,7 @@ Imports:
     magrittr,
     assertthat,
     Biostrings,
+    ShortRead,
     dplyr,
     futile.logger,
     inferrnal (>= 0.99.1),
@@ -33,9 +34,8 @@ Suggests:
     rITSx (>= 0.0.5),
     knitr,
     rmarkdown,
-    covr
-Enhances:
-    ShortRead
+    covr,
+    testthat (>= 2.1.0)
 RoxygenNote: 7.0.2
 biocViews:
     SequenceMatching,

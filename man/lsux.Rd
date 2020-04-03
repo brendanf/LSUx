@@ -15,7 +15,9 @@ lsux(
 }
 \arguments{
 \item{seq}{(filename readable by Infernal,
-\code{\link[Biostrings]{XStringSet}}, or \code{character} vector) sequences
+\code{\link[Biostrings]{XStringSet}},
+\code{\link[ShortRead]{ShortRead}},
+or \code{character} vector) sequences
 to extract regions from}
 
 \item{cm_5.8S}{(filename) covariance model for 5.8S rRNA}
