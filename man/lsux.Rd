@@ -32,18 +32,19 @@ before 5.8S (if any) as ITS1}
 \item{cpu}{(\code{integer} scalar) number of threads to use in Infernal calls}
 }
 \value{
-a \code{\link[tibble]{tibble}} with one row for each input sequence.
+a \code{\link[tibble]{tibble}} with one row for each region found for
+ each input sequence.
  The columns are: \describe{
  \item{\code{seq_id} (\code{character})}{ the sequence name from
      \code{seq}}
- \item{\code{length} (\code{integer})}{ the length of the sequence in base
-      pairs}
- \item{\code{*_start} (\code{integer})}{for each domain found in any of the
-   sequences, the starting base for that domain in this sequence. \code{"*"}
-   can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"}, \code{"V2"},
-   \code{"LSU2"}, \code{"V3"}, etc.}
- \item{\code{*_end} (\code{integer})}{as \code{*_start}, but giving the end
-     base for each domain.}}
+ \item{\code{length} (\code{integer})}{ the length of the original sequence
+      in base pairs}
+ \item{\code{region} (\code{character})}{the name of the found domain}
+ \item{\code{*_start} (\code{integer})}{the starting base for that domain in
+   this sequence. Can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"},
+   \code{"V2"}, \code{"LSU2"}, \code{"V3"}, etc.}
+ \item{\code{end} (\code{integer})}{as \code{start}, but giving the end
+     base for the domain.}}
 }
 \description{
 Extracts alternating variable and conserved domains from the contiguous rDNA
