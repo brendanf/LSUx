@@ -51,43 +51,90 @@ spread_regions <- function(pos) {
   dplyr::bind_cols(outhead, outvals)
 }
 
-as_sread <- function(seq) {
-  UseMethod("as_sread")
-}
+methods::setAs(
+    "DNAStringSet",
+    "ShortRead",
+    function(from) {
+        ShortRead::ShortRead(
+            magrittr::set_names(from, NULL),
+            Biostrings::BStringSet(names(from))
+        )
+    }
+)
 
-as_sread.ShortRead <- function(seq) {
-  seq
-}
+methods::setAs(
+    "ShortRead",
+    "DNAStringSet",
+    function(from) {
+        out <- ShortRead::sread(from)
+        names(out) <- as.character(ShortRead::id(from))
+        out
+    }
+)
 
-as_sread.DNAStringSet <- function(seq) {
-  ShortRead::ShortRead(
-    magrittr::set_names(seq, NULL),
-    Biostrings::BStringSet(names(seq))
-  )
-}
+methods::setAs(
+    "character",
+    "ShortRead",
+    function(from) {
+        if (length(from) == 1 && file.exists(from)) {
+            from <- tryCatch(
+                ShortRead::readFasta(from),
+                error = function(e) {
+                    ShortRead::readFastq(from)
+                }
+            )
+        } else {
+            ShortRead::ShortRead(
+                sread = Biostrings::DNAStringSet(from, use.names = FALSE),
+                id = Biostrings::BStringSet(names(from))
+            )
+        }
+    }
+)
 
-as_sread.character <- function(seq) {
-  if (length(seq) == 1 && file.exists(seq)) {
-    seq <- tryCatch(
-      ShortRead::readFasta(seq),
-      error = function(e) {
-        ShortRead::readFastq(seq)
-      }
+sreadq_to_qsDNAss <- function(from) {
+    to = Biostrings::QualityScaledDNAStringSet(
+        x = ShortRead::sread(from),
+        quality = ShortRead::quality(from)
     )
-  } else {
-    ShortRead::ShortRead(
-      sread = Biostrings::DNAStringSet(seq, use.names = FALSE),
-      id = Biostrings::BStringSet(names(seq))
-    )
-  }
+    names(to) <- ShortRead::id(from)
+    to
 }
 
-as_sread.QualityScaledDNAStringSet <- function(seq) {
-  ShortRead::ShortReadQ(
-    sread = magrittr::set_names(methods::as(seq, "DNAStringSet"), NULL),
-    quality = Biostrings::quality(seq),
-    id = Biostrings::BStringSet(names(seq))
-  )
+methods::setAs(
+    "ShortReadQ",
+    "QualityScaledXStringSet",
+    sreadq_to_qsDNAss
+)
+
+methods::setAs(
+    "ShortReadQ",
+    "QualityScaledDNAStringSet",
+    sreadq_to_qsDNAss
+)
+
+qsDNAss_to_sreadq <- function(seq) {
+    ShortRead::ShortReadQ(
+        sread = magrittr::set_names(methods::as(seq, "DNAStringSet"), NULL),
+        quality = Biostrings::quality(seq),
+        id = Biostrings::BStringSet(names(seq))
+    )
+}
+
+methods::setAs(
+    "QualityScaledDNAStringSet",
+    "ShortReadQ",
+    qsDNAss_to_sreadq
+)
+
+methods::setAs(
+    "QualityScaledDNAStringSet",
+    "ShortRead",
+    qsDNAss_to_sreadq
+)
+
+protect_names <- function(seq) {
+  UseMethod("protect_names")
 }
 
 name_protected_sread <- function(seq) {
