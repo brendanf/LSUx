@@ -51,6 +51,8 @@ spread_regions <- function(pos) {
   dplyr::bind_cols(outhead, outvals)
 }
 
+#' @importClassesFrom Biostrings DNAStringSet
+#' @importClassesFrom ShortRead ShortRead
 methods::setAs(
     "DNAStringSet",
     "ShortRead",
@@ -95,12 +97,15 @@ methods::setAs(
 sreadq_to_qsDNAss <- function(from) {
     to = Biostrings::QualityScaledDNAStringSet(
         x = ShortRead::sread(from),
-        quality = ShortRead::quality(from)
+        quality = Biostrings::quality(from)
     )
     names(to) <- ShortRead::id(from)
     to
 }
 
+
+#' @importClassesFrom Biostrings QualityScaledXStringSet
+#' @importClassesFrom ShortRead ShortReadQ
 methods::setAs(
     "ShortReadQ",
     "QualityScaledXStringSet",
@@ -121,6 +126,7 @@ qsDNAss_to_sreadq <- function(seq) {
     )
 }
 
+#' @importClassesFrom Biostrings QualityScaledDNAStringSet
 methods::setAs(
     "QualityScaledDNAStringSet",
     "ShortReadQ",

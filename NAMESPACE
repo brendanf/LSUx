@@ -2,6 +2,11 @@
 
 export(lsux)
 export(merge_5_8S)
+importClassesFrom(Biostrings,DNAStringSet)
+importClassesFrom(Biostrings,QualityScaledDNAStringSet)
+importClassesFrom(Biostrings,QualityScaledXStringSet)
+importClassesFrom(ShortRead,ShortRead)
+importClassesFrom(ShortRead,ShortReadQ)
 importFrom(dplyr,.data)
 importFrom(magrittr,"%$%")
 importFrom(magrittr,"%>%")
