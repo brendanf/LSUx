@@ -5,7 +5,7 @@ output: github_document
 # LSUx
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.org/brendanf/LSUx.svg?branch=master)](https://travis-ci.org/brendanf/LSUx)
+[![Travis build status](https://travis-ci.com/brendanf/LSUx.svg?branch=master)](https://travis-ci.com/brendanf/LSUx)
 [![Codecov test coverage](https://codecov.io/gh/brendanf/LSUx/branch/master/graph/badge.svg)](https://codecov.io/gh/brendanf/LSUx?branch=master)
 <!-- badges: end -->
 

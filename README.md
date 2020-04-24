@@ -4,7 +4,7 @@
 <!-- badges: start -->
 
 [![Travis build
-status](https://travis-ci.org/brendanf/LSUx.svg?branch=master)](https://travis-ci.org/brendanf/LSUx)
+status](https://travis-ci.com/brendanf/LSUx.svg?branch=master)](https://travis-ci.com/brendanf/LSUx)
 [![Codecov test
 coverage](https://codecov.io/gh/brendanf/LSUx/branch/master/graph/badge.svg)](https://codecov.io/gh/brendanf/LSUx?branch=master)
 <!-- badges: end -->
@@ -118,30 +118,26 @@ for each sequence.
 regions <- lsux(seq, cm_32S = cm_32S_trunc, ITS1 = TRUE, cpu = 1)
 ```
 
-    ## INFO [2020-03-23 18:18:17] Beginning CM search.
-    ## INFO [2020-03-23 18:18:20] 48 sequences contained a single 5.8S hit.
-    ## INFO [2020-03-23 18:18:24] Beginning CM alignment.
-    ## INFO [2020-03-23 18:18:53] Extracting LSU regions.
+    ## INFO [2020-04-24 16:05:42] Beginning CM search.
+    ## INFO [2020-04-24 16:05:44] 48 sequences contained a single 5.8S hit.
+    ## INFO [2020-04-24 16:05:46] Beginning CM alignment.
+    ## INFO [2020-04-24 16:05:58] Extracting LSU regions.
 
 ``` r
 regions
 ```
 
-    ## # A tibble: 48 x 22
-    ##    seq_name length ITS1_start ITS1_end `5_8S_start` `5_8S_end` ITS2_start
-    ##    <chr>     <int>      <int>    <int>        <int>      <int>      <int>
-    ##  1 seq45      1635          1      294          295        451        452
-    ##  2 seq3       1571          1      235          236        392        393
-    ##  3 seq2       1551          1      192          193        349        350
-    ##  4 seq28      1408          1      191          192        348        349
-    ##  5 seq23      1447          1      193          194        350        351
-    ##  6 seq9       1406          1      169          170        326        327
-    ##  7 seq7       1447          1      190          191        347        348
-    ##  8 seq48      1535          1      191          192        348        349
-    ##  9 seq5       1587          1      256          257        413        414
-    ## 10 seq6       1584          1      256          257        413        414
-    ## # … with 38 more rows, and 15 more variables: ITS2_end <int>, LSU1_start <int>,
-    ## #   LSU1_end <int>, V2_start <int>, V2_end <int>, LSU2_start <int>,
-    ## #   LSU2_end <int>, V3_start <int>, V3_end <int>, LSU3_start <int>,
-    ## #   LSU3_end <int>, V4_start <int>, V4_end <int>, LSU4_start <int>,
-    ## #   LSU4_end <int>
+    ## # A tibble: 480 x 5
+    ##    seq_id length region start   end
+    ##    <chr>   <int> <chr>  <int> <int>
+    ##  1 seq1     1404 ITS1       1   114
+    ##  2 seq1     1404 5_8S     115   271
+    ##  3 seq1     1404 ITS2     272   412
+    ##  4 seq1     1404 LSU1     413   517
+    ##  5 seq1     1404 V2       518   673
+    ##  6 seq1     1404 LSU2     674   832
+    ##  7 seq1     1404 V3       833  1106
+    ##  8 seq1     1404 LSU3    1107  1147
+    ##  9 seq1     1404 V4      1148  1242
+    ## 10 seq1     1404 LSU4    1243  1404
+    ## # … with 470 more rows
