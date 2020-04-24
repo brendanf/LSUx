@@ -391,14 +391,6 @@ lsux <- function(
         "%d sequences contained a single 5.8S hit.", nrow(cms),
         name = "LSUx"
     )
-    if (is.character(seq)) {
-        if (length(seq) == 1 && file.exists(seq)) {
-            seq <- Biostrings::readBStringSet(seq)
-        }
-        else {
-            seq <- Biostrings::BStringSet(seq)
-        }
-    }
 
     seq_idx <- as.integer(cms$target_name)
     seq_32S <- IRanges::narrow(seq$seq[seq_idx], start = cms$seq_from)
