@@ -372,10 +372,12 @@ lsux <- function(
         assertthat::is.flag(ITS1)
     )
 
+    seq <- protect_names(seq)
+
     futile.logger::flog.info("Beginning CM search.", name = "LSUx")
     cms <- inferrnal::cmsearch(
         cm = cm_5.8S,
-        seq = seq,
+        seq = seq$seq,
         glocal = glocal,
         cpu = cpu
     )
@@ -396,23 +398,11 @@ lsux <- function(
         else {
             seq <- Biostrings::BStringSet(seq)
         }
-        abc <- Biostrings::uniqueLetters(seq)
-        if (all(abc %in% Biostrings::DNA_ALPHABET)) {
-            seq <- Biostrings::DNAStringSet(seq)
-            seq <- Biostrings::RNAStringSet(seq)
-        } else if (all(abc %in% Biostrings::RNA_ALPHABET)) {
-            seq <- Biostrings::RNAStringSet(seq)
-        } else stop("Sequence alphabet should be DNA or RNA LSUx.")
     }
-    seqnames <- if (methods::is(seq, "ShortRead")) {
-      as.character(ShortRead::id(seq))
-    } else (
-      names(seq)
-    )
-    seq_idx <- match(cms$target_name, seqnames)
-    seq_32S <- IRanges::narrow(seq[seq_idx], start = cms$seq_from)
 
-    #TODO: protect names (here or in Inferrnal)
+    seq_idx <- as.integer(cms$target_name)
+    seq_32S <- IRanges::narrow(seq$seq[seq_idx], start = cms$seq_from)
+
     futile.logger::flog.info("Beginning CM alignment.", name = "LSUx")
     aln <- inferrnal::cmalign(
         cmfile = cm_32S,
@@ -452,5 +442,7 @@ lsux <- function(
             )
         }
     }
-    gather_regions(pos)
+    pos <- gather_regions(pos)
+    pos$seq_id <- seq$seq_id[as.integer(pos$seq_id)]
+    pos
 }

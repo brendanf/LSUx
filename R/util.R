@@ -137,11 +137,7 @@ protect_names <- function(seq) {
   UseMethod("protect_names")
 }
 
-name_protected_sread <- function(seq) {
-  UseMethod("name_protected_sread")
-}
-
-name_protected_sread.ShortRead <- function(seq) {
+protect_names.ShortRead <- function(seq) {
   seq_id <- as.character(ShortRead::id(seq))
   seq@id <- Biostrings::BStringSet(as.character(seq_along(seq)))
   list(
@@ -150,6 +146,28 @@ name_protected_sread.ShortRead <- function(seq) {
   )
 }
 
-name_protected_sread.default <- function(seq) {
-  name_protected_sread.ShortRead(as_sread(seq))
+protect_names.default <- function(seq) {
+    seq_id <- names(seq)
+    names(seq) <- as.character(seq_along(seq))
+    list(
+        seq_id = seq_id,
+        seq = seq
+    )
+}
+
+protect_names.character <- function(seq) {
+    if (length(seq) == 1 && file.exists(seq) && endsWith(seq, ".fasta")) {
+        seq <- Biostrings::readBStringSet(seq)
+    } else {
+        seq <- Biostrings::BStringSet(seq)
+    }
+
+    abc <- Biostrings::uniqueLetters(seq)
+    if (all(abc %in% Biostrings::DNA_ALPHABET)) {
+        seq <- Biostrings::DNAStringSet(seq)
+        seq <- Biostrings::RNAStringSet(seq)
+    } else if (all(abc %in% Biostrings::RNA_ALPHABET)) {
+        seq <- Biostrings::RNAStringSet(seq)
+    } else stop("Sequence alphabet should be DNA or RNA for LSUx.")
+    protect_names.default(seq)
 }

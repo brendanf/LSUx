@@ -1,4 +1,12 @@
+# LSUx 0.99.3
+
+* `lsux` now protects the names of input sequences, which can sometimes be mangled by Infernal
+  if they contain nonstandard characters.
+* `lsux` supports inputs as FASTA filenames, named character vectors, and objects of types 
+  `DNAStringSet`, `RNAStringSet`, `ShortRead`, and `ShortReadQ`.
+
 # LSUx 0.99.2
+
 * **Breaking change**: Change return value of lsux from wide to long, to match
   merge_5_8S and rITSx, as well as the inputs for tzara.
 
