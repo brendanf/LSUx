@@ -5,16 +5,19 @@ test_RNAss <- Biostrings::RNAStringSet(test_DNAss)
 test_RNAchar <- as.character(test_RNAss)
 test_DNAchar <- as.character(test_DNAss)
 
-lsux_file <- lsux(test_file)
-lsux_sread <- lsux(test_sread)
-lsux_DNAss <- lsux(test_DNAss)
-lsux_RNAss <- lsux(test_RNAss)
-lsux_DNAchar <- lsux(test_DNAchar)
-lsux_RNAchar <- lsux(test_RNAchar)
+
 
 test_that(
     "lsux gives same results for file, character, ShortRead, DNAStringSet, and RNAStringSet",
     {
+        skip_on_cran()
+        lsux_file <- lsux(test_file)
+        lsux_sread <- lsux(test_sread)
+        lsux_DNAss <- lsux(test_DNAss)
+        lsux_RNAss <- lsux(test_RNAss)
+        lsux_DNAchar <- lsux(test_DNAchar)
+        lsux_RNAchar <- lsux(test_RNAchar)
+
         expect_equal(lsux_file, lsux_sread)
         expect_equal(lsux_file, lsux_DNAss)
         expect_equal(lsux_file, lsux_RNAss)
@@ -25,5 +28,10 @@ test_that(
 
 test_that(
     "no regression in lsux result",
-    expect_known_value(lsux_file, file = "lsu")
+    {
+
+        skip_on_cran()
+        lsux_file <- lsux(test_file)
+        expect_known_value(lsux_file, file = "lsu")
+    }
 )
