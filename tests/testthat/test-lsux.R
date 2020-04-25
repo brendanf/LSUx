@@ -35,3 +35,19 @@ test_that(
         expect_known_value(lsux_file, file = "lsu")
     }
 )
+
+test_that(
+    "empty result for query with no 5.8S",
+    {
+        expect_equal(
+            lsux(c("test" = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")),
+            tibble::tibble(
+                seq_id = character(),
+                length = integer(),
+                region = character(),
+                start = integer(),
+                end = integer()
+            )
+        )
+    }
+)
