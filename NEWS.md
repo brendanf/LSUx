@@ -1,3 +1,9 @@
+# LSUx 0.99.4
+
+* Handle queries where no sequences have a 5.8S match (by returning a 0-row
+  result).
+* Pass `mxsize` argument to `cmalign`.
+
 # LSUx 0.99.3
 
 * `lsux` now protects the names of input sequences, which can sometimes be mangled by Infernal

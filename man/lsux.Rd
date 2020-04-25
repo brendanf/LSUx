@@ -10,7 +10,8 @@ lsux(
   cm_32S = system.file(file.path("extdata", "fungi_32S.cm"), package = "LSUx"),
   glocal = TRUE,
   ITS1 = FALSE,
-  cpu
+  cpu = NULL,
+  mxsize = NULL
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ to extract regions from}
 before 5.8S (if any) as ITS1}
 
 \item{cpu}{(\code{integer} scalar) number of threads to use in Infernal calls}
+
+\item{mxsize}{(\code{double} scalar) passed on to \code{\link[inferrnal]{cmalign}}}
 }
 \value{
 a \code{\link[tibble]{tibble}} with one row for each region found for
@@ -42,7 +45,7 @@ a \code{\link[tibble]{tibble}} with one row for each region found for
  \item{\code{length} (\code{integer})}{ the length of the original sequence
       in base pairs}
  \item{\code{region} (\code{character})}{the name of the found domain}
- \item{\code{*_start} (\code{integer})}{the starting base for that domain in
+ \item{\code{start} (\code{integer})}{the starting base for that domain in
    this sequence. Can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"},
    \code{"V2"}, \code{"LSU2"}, \code{"V3"}, etc.}
  \item{\code{end} (\code{integer})}{as \code{start}, but giving the end

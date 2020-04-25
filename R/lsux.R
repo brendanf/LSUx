@@ -326,6 +326,7 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
 #' @param ITS1 (\code{logical} scalar) if \code{TRUE}, include sequence fragment
 #'  before 5.8S (if any) as ITS1
 #' @param cpu (\code{integer} scalar) number of threads to use in Infernal calls
+#' @param mxsize (\code{double} scalar) passed on to \code{\link[inferrnal]{cmalign}}
 #'
 #' @return a \code{\link[tibble]{tibble}} with one row for each region found for
 #'  each input sequence.
@@ -363,7 +364,8 @@ lsux <- function(
     ),
     glocal = TRUE,
     ITS1 = FALSE,
-    cpu
+    cpu = NULL,
+    mxsize = NULL
 ) {
     assertthat::assert_that(
         assertthat::is.readable(cm_5.8S),
@@ -410,7 +412,8 @@ lsux <- function(
         cmfile = cm_32S,
         seq = seq_32S,
         glocal = glocal,
-        cpu = cpu
+        cpu = cpu,
+        mxsize = mxsize
     )
 
     futile.logger::flog.info("Extracting LSU regions.", name = "LSUx")
