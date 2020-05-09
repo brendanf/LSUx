@@ -162,8 +162,13 @@ protect_names.default <- function(seq) {
 }
 
 protect_names.character <- function(seq) {
-    if (length(seq) == 1 && file.exists(seq) && endsWith(seq, ".fasta")) {
-        seq <- Biostrings::readBStringSet(seq)
+    if (length(seq) == 1 && file.exists(seq)) {
+        seq <- tryCatch(
+            Biostrings::readBStringSet(seq, format = "fasta"),
+            error = function(e) {
+                Biostrings::readBStringSet(seq, format = "fastq")
+            }
+        )
     } else {
         seq <- Biostrings::BStringSet(seq)
     }

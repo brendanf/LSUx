@@ -313,7 +313,7 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
 #' critical to remove unpaired secondary structure elements from the
 #' \code{"#=GC SS_cons"} line of the seed alignment.
 #'
-#' @param seq (filename readable by Infernal,
+#' @param seq (single filename readable by \code{\link[Biostrings]{readBStringSet}},
 #'  \code{\link[Biostrings]{XStringSet}},
 #'  \code{\link[ShortRead]{ShortRead}},
 #'  or \code{character} vector) sequences

@@ -15,7 +15,7 @@ lsux(
 )
 }
 \arguments{
-\item{seq}{(filename readable by Infernal,
+\item{seq}{(single filename readable by \code{\link[Biostrings]{readBStringSet}},
 \code{\link[Biostrings]{XStringSet}},
 \code{\link[ShortRead]{ShortRead}},
 or \code{character} vector) sequences

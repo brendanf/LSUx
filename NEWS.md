@@ -1,3 +1,7 @@
+# LSUx 0.99.5
+
+* Support fastq files in `lsux`.
+
 # LSUx 0.99.4
 
 * Handle queries where no sequences have a 5.8S match (by returning a 0-row
