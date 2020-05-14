@@ -3,6 +3,7 @@
 * When input sequences to `lsux()` are unnamed, use index (as character) for
   `seq_id` field in output. Previously, the result would be missing `seq_id` in
   this case.
+* Fix some issues in coercion between sequence types (migrated from `tzara`).
 
 # LSUx 0.99.5
 

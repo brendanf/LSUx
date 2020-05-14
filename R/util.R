@@ -157,21 +157,23 @@ methods::setAs(
 )
 
 protect_names <- function(seq) {
-  UseMethod("protect_names")
+    UseMethod("protect_names")
 }
 
 protect_names.ShortRead <- function(seq) {
-  seq_id <- as.character(ShortRead::id(seq))
-  seq@id <- Biostrings::BStringSet(as.character(seq_along(seq)))
-  list(
-    seq_id = seq_id,
-    seq = seq
-  )
+    seq_id <- as.character(ShortRead::id(seq))
+    seq@id <- Biostrings::BStringSet(as.character(seq_along(seq)))
+    if (all(seq_id == "")) seq_id <- as.character(ShortRead::id(seq))
+    list(
+        seq_id = seq_id,
+        seq = seq
+    )
 }
 
 protect_names.default <- function(seq) {
     seq_id <- names(seq)
     names(seq) <- as.character(seq_along(seq))
+    if (is.null(seq_id)) seq_id <- names(seq)
     list(
         seq_id = seq_id,
         seq = seq
