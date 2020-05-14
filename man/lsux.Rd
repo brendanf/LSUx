@@ -9,6 +9,7 @@ lsux(
   cm_5.8S = system.file(file.path("extdata", "RF00002.cm"), package = "inferrnal"),
   cm_32S = system.file(file.path("extdata", "fungi_32S.cm"), package = "LSUx"),
   glocal = TRUE,
+  global = FALSE,
   ITS1 = FALSE,
   cpu = NULL,
   mxsize = NULL
@@ -27,6 +28,9 @@ to extract regions from}
 (5.8S, ITS2, and LSU)}
 
 \item{glocal}{(\code{logical} scalar) if \code{TRUE}, use glocal alignment in
+\code{\link[inferrnal]{cmsearch}}}
+
+\item{global}{(\code{logical} scalar) if \code{TRUE}, use global alignment in
 \code{\link[inferrnal]{cmalign}}}
 
 \item{ITS1}{(\code{logical} scalar) if \code{TRUE}, include sequence fragment

@@ -19,7 +19,7 @@ Imports:
     ShortRead,
     dplyr,
     futile.logger,
-    inferrnal (>= 0.99.4),
+    inferrnal (>= 0.99.5),
     IRanges,
     methods,
     purrr,

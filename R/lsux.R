@@ -322,6 +322,8 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
 #' @param cm_32S (filename) covariance model for 32S pre-rRNA
 #'      (5.8S, ITS2, and LSU)
 #' @param glocal (\code{logical} scalar) if \code{TRUE}, use glocal alignment in
+#'  \code{\link[inferrnal]{cmsearch}}
+#' @param global (\code{logical} scalar) if \code{TRUE}, use global alignment in
 #'  \code{\link[inferrnal]{cmalign}}
 #' @param ITS1 (\code{logical} scalar) if \code{TRUE}, include sequence fragment
 #'  before 5.8S (if any) as ITS1
@@ -363,6 +365,7 @@ lsux <- function(
         package = "LSUx"
     ),
     glocal = TRUE,
+    global = FALSE,
     ITS1 = FALSE,
     cpu = NULL,
     mxsize = NULL
@@ -411,7 +414,7 @@ lsux <- function(
     aln <- inferrnal::cmalign(
         cmfile = cm_32S,
         seq = seq_32S,
-        glocal = glocal,
+        global = global,
         cpu = cpu,
         mxsize = mxsize
     )
