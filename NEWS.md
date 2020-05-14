@@ -4,6 +4,7 @@
   `seq_id` field in output. Previously, the result would be missing `seq_id` in
   this case.
 * Fix some issues in coercion between sequence types (migrated from `tzara`).
+* Don't return 0-length (or shorter) regions in `lsux`.
 
 # LSUx 0.99.5
 

@@ -448,6 +448,7 @@ lsux <- function(
         }
     }
     pos <- gather_regions(pos)
+    pos <- dplyr::filter(pos, end >= start)
     pos$seq_id <- seq$seq_id[as.integer(pos$seq_id)]
     pos
 }
