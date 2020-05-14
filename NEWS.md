@@ -1,3 +1,9 @@
+# LSUx 0.99.6
+
+* When input sequences to `lsux()` are unnamed, use index (as character) for
+  `seq_id` field in output. Previously, the result would be missing `seq_id` in
+  this case.
+
 # LSUx 0.99.5
 
 * Support fastq files in `lsux`.
