@@ -5,8 +5,7 @@ r:
   - oldrel
   - release
   - devel
-bioc-packages:
-  - ShortRead
+cache: packages
 apt-packages:
   - infernal
   - hmmer
