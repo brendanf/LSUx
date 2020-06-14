@@ -17,8 +17,8 @@ using a 5.8S RNA model such as
 }
 \value{
 a \code{\link[tibble]{tibble}} in the same format output by
-  \code{\link[rITSx]{itsx}}, with updated positions for the boundaries of
-  5.8S.
+    \code{\link[rITSx]{itsx}}, with updated positions for the boundaries of
+    5.8S.
 }
 \description{
 The 3' end of the 5.8S RNA is quite variable, and it is sometimes not

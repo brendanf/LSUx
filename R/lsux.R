@@ -17,15 +17,15 @@ utils::globalVariables(c(".", "end", "start", "seq_from", "seq_to"))
 #' ITS1 and beginning of ITS2 to match.
 #'
 #' @param itsx_result (\code{data.frame}) "positions" results from
-#'        \code{\link[rITSx]{itsx}}
+#'     \code{\link[rITSx]{itsx}}
 #' @param csearch_result (\code{data.frame}) results from
-#'        \code{\link[inferrnal]{cmsearch}} run on the same set of sequences,
-#'        using a 5.8S RNA model such as
-#'        \href{https://rfam.xfam.org/family/RF00002/cm}{RF00002}
+#'     \code{\link[inferrnal]{cmsearch}} run on the same set of sequences,
+#'     using a 5.8S RNA model such as
+#'     \href{https://rfam.xfam.org/family/RF00002/cm}{RF00002}
 #'
 #' @return a \code{\link[tibble]{tibble}} in the same format output by
-#'   \code{\link[rITSx]{itsx}}, with updated positions for the boundaries of
-#'   5.8S.
+#'     \code{\link[rITSx]{itsx}}, with updated positions for the boundaries of
+#'     5.8S.
 #' @export
 #'
 #' @examples
@@ -321,20 +321,21 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
 #' critical to remove unpaired secondary structure elements from the
 #' \code{"#=GC SS_cons"} line of the seed alignment.
 #'
-#' @param seq (single filename readable by \code{\link[Biostrings]{readBStringSet}},
-#'  \code{\link[Biostrings]{XStringSet-class}},
-#'  \code{\link[ShortRead]{ShortRead-class}},
-#'  or \code{character} vector) sequences
-#'  to extract regions from
+#' @param seq (single filename readable by
+#'     \code{\link[Biostrings:XStringSet-io]{readBStringSet}},
+#'     \code{\link[Biostrings]{XStringSet-class}},
+#'     \code{\link[ShortRead]{ShortRead-class}},
+#'     or \code{character} vector) sequences
+#'     to extract regions from
 #' @param cm_5.8S (filename) covariance model for 5.8S rRNA
 #' @param cm_32S (filename) covariance model for 32S pre-rRNA
-#'      (5.8S, ITS2, and LSU)
+#'     (5.8S, ITS2, and LSU)
 #' @param glocal (\code{logical} scalar) if \code{TRUE}, use glocal alignment in
-#'  \code{\link[inferrnal]{cmsearch}}
+#'     \code{\link[inferrnal]{cmsearch}}
 #' @param global (\code{logical} scalar) if \code{TRUE}, use global alignment in
-#'  \code{\link[inferrnal]{cmalign}}
+#'     \code{\link[inferrnal]{cmalign}}
 #' @param ITS1 (\code{logical} scalar) if \code{TRUE}, include sequence fragment
-#'  before 5.8S (if any) as ITS1
+#'     before 5.8S (if any) as ITS1
 #' @param cpu (\code{integer} scalar) number of threads to use in Infernal calls
 #' @param mxsize (\code{double} scalar) passed on to
 #'     \code{\link[inferrnal]{cmalign}}
@@ -342,18 +343,19 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
 #'     \code{\link[inferrnal]{cmsearch}}
 #'
 #' @return a \code{\link[tibble]{tibble}} with one row for each region found for
-#'  each input sequence.
-#'  The columns are: \describe{
-#'  \item{\code{seq_id} (\code{character})}{ the sequence name from
-#'      \code{seq}}
-#'  \item{\code{length} (\code{integer})}{ the length of the original sequence
-#'       in base pairs}
-#'  \item{\code{region} (\code{character})}{the name of the found domain}
-#'  \item{\code{start} (\code{integer})}{the starting base for that domain in
-#'    this sequence. Can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"},
-#'    \code{"V2"}, \code{"LSU2"}, \code{"V3"}, etc.}
-#'  \item{\code{end} (\code{integer})}{as \code{start}, but giving the end
-#'      base for the domain.}}
+#'     each input sequence.
+#'     The columns are: \describe{
+#'         \item{\code{seq_id} (\code{character})}{ the sequence name from
+#'             \code{seq}}
+#'         \item{\code{length} (\code{integer})}{ the length of the original
+#'             sequence in base pairs}
+#'         \item{\code{region} (\code{character})}{ the name of the found
+#'             domain. Can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"},
+#'             \code{"V2"}, \code{"LSU2"}, \code{"V3"}, etc.}
+#'         \item{\code{start} (\code{integer})}{the starting base for that
+#'             domain in this sequence.}
+#'         \item{\code{end} (\code{integer})}{as \code{start}, but giving the
+#'             end base for the domain.}}
 #' @export
 #'
 #' @examples
@@ -522,13 +524,13 @@ repair_unmatched_secondary_structure <- function(ss) {
 #' indicating unpairable bases.
 #'
 #' @param alnfile (\code{character} filename or \code{\link{connection}}) the
-#'         stockholm alignment to be truncated.
+#'     stockholm alignment to be truncated.
 #' @param outfile (\code{character} filename or \code{\link{connection}}) path
-#'         or connection to output the truncated alignment to.
+#'     or connection to output the truncated alignment to.
 #' @param start (\code{integer} scalar) first base to include in the truncated
-#'         alignment.
+#'     alignment.
 #' @param stop (\code{integer} scalar) last base to include in the truncated
-#'         alignment.
+#'     alignment.
 #'
 #' @return NULL (invisibly)
 #' @export
