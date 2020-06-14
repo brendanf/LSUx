@@ -7,6 +7,7 @@
 * Don't return 0-length (or shorter) regions in `lsux`.
 * Add functions to truncate Stockholm alignments and repair secondary structure
   annotations.
+* Add option "quiet" to `lsux()` to suppress `cmsearch` output.
 
 # LSUx 0.99.5
 

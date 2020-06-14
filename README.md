@@ -118,10 +118,10 @@ for each sequence.
 regions <- lsux(seq, cm_32S = cm_32S_trunc, ITS1 = TRUE, cpu = 1)
 ```
 
-    ## INFO [2020-04-24 16:05:42] Beginning CM search.
-    ## INFO [2020-04-24 16:05:44] 48 sequences contained a single 5.8S hit.
-    ## INFO [2020-04-24 16:05:46] Beginning CM alignment.
-    ## INFO [2020-04-24 16:05:58] Extracting LSU regions.
+    ## INFO [2020-06-14 22:00:26] Beginning CM search.
+    ## INFO [2020-06-14 22:00:27] 48 sequences contained a single 5.8S hit.
+    ## INFO [2020-06-14 22:00:27] Beginning CM alignment.
+    ## INFO [2020-06-14 22:00:45] Extracting LSU regions.
 
 ``` r
 regions

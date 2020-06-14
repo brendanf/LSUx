@@ -12,7 +12,8 @@ lsux(
   global = FALSE,
   ITS1 = FALSE,
   cpu = NULL,
-  mxsize = NULL
+  mxsize = NULL,
+  quiet = TRUE
 )
 }
 \arguments{
@@ -38,7 +39,11 @@ before 5.8S (if any) as ITS1}
 
 \item{cpu}{(\code{integer} scalar) number of threads to use in Infernal calls}
 
-\item{mxsize}{(\code{double} scalar) passed on to \code{\link[inferrnal]{cmalign}}}
+\item{mxsize}{(\code{double} scalar) passed on to
+\code{\link[inferrnal]{cmalign}}}
+
+\item{quiet}{(\code{logical} scalar) passed on to
+\code{\link[inferrnal]{cmsearch}}}
 }
 \value{
 a \code{\link[tibble]{tibble}} with one row for each region found for
