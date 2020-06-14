@@ -5,6 +5,8 @@
   this case.
 * Fix some issues in coercion between sequence types (migrated from `tzara`).
 * Don't return 0-length (or shorter) regions in `lsux`.
+* Add functions to truncate Stockholm alignments and repair secondary structure
+  annotations.
 
 # LSUx 0.99.5
 

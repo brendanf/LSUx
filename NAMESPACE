@@ -2,6 +2,8 @@
 
 export(lsux)
 export(merge_5_8S)
+export(repair_unmatched_secondary_structure)
+export(truncate_alignment)
 importClassesFrom(Biostrings,DNAStringSet)
 importClassesFrom(Biostrings,QualityScaledDNAStringSet)
 importClassesFrom(Biostrings,QualityScaledXStringSet)

@@ -455,3 +455,124 @@ lsux <- function(
     pos$seq_id <- seq$seq_id[as.integer(pos$seq_id)]
     pos
 }
+
+#' Replaced unmatched brackets in a dot-bracket RNA secondary structure
+#'
+#' @param ss (\code{character} scalar) the secondary structure to repair.
+#'
+#' @return (\code{character} scalar) the repaired secondary structure.
+#' @export
+#'
+#' @examples
+#'     # some brackets are unmatched due to truncation
+#'     ss <- "..(((.....[[...<<<<<___>>>>>.[[.<<<___>>>.]"
+#'     repair_unmatched_secondary_structure(ss)
+repair_unmatched_secondary_structure <- function(ss) {
+    assertthat::assert_that(assertthat::is.string(ss))
+    this_ss <- ss
+    changed <- TRUE
+    while (changed) {
+        next_ss <- stringi::stri_replace_all_regex(
+            this_ss,
+            pattern = c(
+                "\\[([^\\[\\]]*)\\]",
+                "\\{([^\\{\\}]*)\\}",
+                "\\(([^()]*)\\)",
+                "<([^<>]*)>"
+            ),
+            replacement = "X$1X",
+            vectorize_all = FALSE
+        )
+        changed <- this_ss != next_ss
+        this_ss <- next_ss
+    }
+    unmatch <- stringr::str_locate_all(this_ss, "[\\[\\]\\{\\}()<>]")[[1]]
+    for (i in seq_len(nrow(unmatch))) {
+        substr(ss, start = unmatch[i, "start"], stop = unmatch[i,"end"]) <- "X"
+    }
+    ss <- stringr::str_match(
+        ss,
+        "^([^\\[\\]\\{\\}()<>]*)(.+[\\]\\})>])?([^\\[\\]\\{\\}()<>]*)$"
+        )
+    paste0(
+        chartr("X", ":", ss[1, 2]),
+        chartr("X", "-", ss[1, 3]),
+        chartr("X", ":", ss[1, 4])
+    )
+}
+
+#' Truncate an annotated Stockholm alignment file with secondary structure
+#'
+#' Simply truncating a Stockholm alignment file that includes secondary
+#' structure annotations may result in invalid base pairing, when only one half
+#' of a pair is removed. This function converts these half-pairs to "X",
+#' indicating unpairable bases.
+#'
+#' @param alnfile (\code{character} filename or \code{\link{connection}}) the
+#'         stockholm alignment to be truncated.
+#' @param outfile (\code{character} filename or \code{\link{connection}}) path
+#'         or connection to output the truncated alignment to.
+#' @param start (\code{integer} scalar) first base to include in the truncated
+#'         alignment.
+#' @param stop (\code{integer} scalar) last base to include in the truncated
+#'         alignment.
+#'
+#' @return NULL (invisibly)
+#' @export
+#'
+#' @examples
+#' aln <- system.file(file.path("extdata", "fungi_32S.cm"), package = "LSUx")
+#' truncate_alignment(aln, tempfile("trunc", fileext = ".stk"), 1, 500)
+truncate_alignment <- function(alnfile, outfile, start = 1L, stop = 1000000L) {
+    if (methods::is(alnfile, "connection")) {
+        assertthat::assert_that(summary(alnfile)[["can read"]] == "yes")
+    } else if (is.character(alnfile)) {
+        assertthat::assert_that(
+            assertthat::is.string(alnfile),
+            assertthat::is.readable(alnfile)
+        )
+        alnfile <- file(alnfile)
+    } else {
+        stop("'alnfile' should be a file name or readable connection")
+    }
+
+    if (methods::is(outfile, "connection")) {
+        assertthat::assert_that(summary(outfile)[["can write"]] == "yes")
+        if (!isOpen(outfile)) {
+            open(outfile, "wt")
+        }
+    } else if (is.character(outfile)) {
+        assertthat::assert_that(
+            assertthat::is.string(outfile),
+            dir.exists(dirname(outfile))
+        )
+        outfile <- file(outfile, "wt")
+    } else {
+        stop("'outfile' should be a file name or readable connection")
+    }
+
+    on.exit(close(outfile))
+
+    handle_line <- function(x, pos) {
+        # truncate sequences, column annotations, and residue annotations
+        if (grepl("^(#=(GC|GR +[^ ]+) +[^ ]+|[^# ][^ ]*) +.+$", x)) {
+            x <- stringr::str_match(
+                x,
+                "^((#=(GC|GR [^ ]+) +[^ ]+|[^# ][^ ]*) +)(.+)$"
+            )
+            x <- paste0(x[1,2], substr(x[1,5], start = start, stop = stop))
+            # repair secondary structure annotations
+            if (startsWith(x, "#=GC SS_cons ") | startsWith(x, "#=GR SS ")) {
+                x <- repair_unmatched_secondary_structure(x)
+            }
+        }
+        writeLines(x, outfile)
+    }
+
+    readr::read_lines_chunked(
+        file = alnfile,
+        chunk_size = 1,
+        callback = readr::SideEffectChunkCallback$new(handle_line)
+    )
+    invisible(NULL)
+}
