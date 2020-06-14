@@ -18,8 +18,8 @@ lsux(
 }
 \arguments{
 \item{seq}{(single filename readable by \code{\link[Biostrings]{readBStringSet}},
-\code{\link[Biostrings]{XStringSet}},
-\code{\link[ShortRead]{ShortRead}},
+\code{\link[Biostrings]{XStringSet-class}},
+\code{\link[ShortRead]{ShortRead-class}},
 or \code{character} vector) sequences
 to extract regions from}
 

@@ -322,8 +322,8 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
 #' \code{"#=GC SS_cons"} line of the seed alignment.
 #'
 #' @param seq (single filename readable by \code{\link[Biostrings]{readBStringSet}},
-#'  \code{\link[Biostrings]{XStringSet}},
-#'  \code{\link[ShortRead]{ShortRead}},
+#'  \code{\link[Biostrings]{XStringSet-class}},
+#'  \code{\link[ShortRead]{ShortRead-class}},
 #'  or \code{character} vector) sequences
 #'  to extract regions from
 #' @param cm_5.8S (filename) covariance model for 5.8S rRNA
