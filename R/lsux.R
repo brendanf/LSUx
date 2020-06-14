@@ -172,6 +172,10 @@ map_position.character <- function(alignment, x) {
 }
 
 extract_rf_region <- function(rf, n, names) {
+    UseMethod("extract_rf_region")
+}
+
+extract_rf_region.character <- function(rf, n, names){
     assertthat::assert_that(
         assertthat::is.string(rf),
         is.character(n),
@@ -188,6 +192,10 @@ extract_rf_region <- function(rf, n, names) {
         rownames(out) <- names
     }
     out
+}
+
+extract_rf_region.XString <- function(rf, n, names) {
+    extract_rf_region.character(as.character(rf), n, names)
 }
 
 gap_free_width <- function(x, gapchars = ".-") {
@@ -368,7 +376,8 @@ lsux <- function(
     global = FALSE,
     ITS1 = FALSE,
     cpu = NULL,
-    mxsize = NULL
+    mxsize = NULL,
+    quiet = TRUE
 ) {
     assertthat::assert_that(
         assertthat::is.readable(cm_5.8S),
@@ -384,7 +393,8 @@ lsux <- function(
         cm = cm_5.8S,
         seq = seq$seq,
         glocal = glocal,
-        cpu = cpu
+        cpu = cpu,
+        quiet = quiet
     )
 
     # remove multiple hits
@@ -420,7 +430,7 @@ lsux <- function(
     )
 
     futile.logger::flog.info("Extracting LSU regions.", name = "LSUx")
-    pos <- extract_LSU(aln = aln$alignment, rf = aln$RF)
+    pos <- extract_LSU(aln = aln$alignment, rf = aln$GC$RF)
     pos <- dplyr::mutate_at(
         pos,
         "seq_id",
