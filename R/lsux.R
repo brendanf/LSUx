@@ -436,20 +436,23 @@ lsux <- function(
     seq_32S <- IRanges::narrow(seq$seq[seq_idx], start = cms$seq_from)
 
     aln_params <- tibble::tibble(cpu, mxsize)
-    aln <- list()
-    while (is.null(aln$alignment) && nrow(aln_params)) {
+    aln <- NULL
+    while (is.null(aln) && nrow(aln_params)) {
         futile.logger::flog.info(
             "Beginning CM alignment with mxsize=%s and cpu=%s.",
             aln_params$mxsize[[1]],
             aln_params$cpu[[1]],
             name = "LSUx"
         )
-        aln <- inferrnal::cmalign(
-            cmfile = cm_32S,
-            seq = seq_32S,
-            global = global,
-            cpu = aln_params$cpu[[1]],
-            mxsize = aln_params$mxsize[[1]]
+        aln <- tryCatch(
+            inferrnal::cmalign(
+                cmfile = cm_32S,
+                seq = seq_32S,
+                global = global,
+                cpu = aln_params$cpu[[1]],
+                mxsize = aln_params$mxsize[[1]]
+            ),
+            error = function(e) NULL
         )
         aln_params <- aln_params[-1,]
     }

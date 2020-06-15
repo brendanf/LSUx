@@ -1,4 +1,5 @@
 futile.logger::flog.threshold(futile.logger::WARN, "LSUx")
+cm <- system.file(file.path("extdata", "fungi_32S_LR5.cm"), package = "LSUx")
 
 test_file <- inferrnal::sample_rRNA_fasta()
 test_that(
@@ -6,7 +7,7 @@ test_that(
     {
 
         skip_on_cran()
-        lsux_file <- lsux(test_file)
+        lsux_file <- lsux(test_file, cm_32S = cm)
         expect_known_value(lsux_file, file = "lsu")
     }
 )
@@ -18,16 +19,16 @@ test_DNAss <- Biostrings::readDNAStringSet(test_file)
 test_RNAss <- Biostrings::RNAStringSet(test_DNAss)
 test_RNAchar <- as.character(test_RNAss)
 test_DNAchar <- as.character(test_DNAss)
+lsux_file <- lsux(test_file, cm_32S = cm)
 
 test_that(
     "lsux gives same results for file, character, ShortRead, DNAStringSet, and RNAStringSet",
     {
-        lsux_file <- lsux(test_file)
-        lsux_sread <- lsux(test_sread)
-        lsux_DNAss <- lsux(test_DNAss)
-        lsux_RNAss <- lsux(test_RNAss)
-        lsux_DNAchar <- lsux(test_DNAchar)
-        lsux_RNAchar <- lsux(test_RNAchar)
+        lsux_sread <- lsux(test_sread, cm_32S = cm)
+        lsux_DNAss <- lsux(test_DNAss, cm_32S = cm)
+        lsux_RNAss <- lsux(test_RNAss, cm_32S = cm)
+        lsux_DNAchar <- lsux(test_DNAchar, cm_32S = cm)
+        lsux_RNAchar <- lsux(test_RNAchar, cm_32S = cm)
 
         expect_equal(lsux_file, lsux_sread)
         expect_equal(lsux_file, lsux_DNAss)
@@ -49,6 +50,17 @@ test_that(
                 start = integer(),
                 end = integer()
             )
+        )
+    }
+)
+
+test_that(
+    "progressive memory allocation works",
+    {
+        expect_error(lsux(test_sread, cm_32S = cm, mxsize = 1, cpu = 1))
+        expect_equal(
+            lsux(test_sread, cm_32S = cm, mxsize = c(1, 1024), cpu = 1),
+            lsux_file
         )
     }
 )
