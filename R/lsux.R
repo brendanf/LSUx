@@ -336,9 +336,14 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
 #'     \code{\link[inferrnal]{cmalign}}
 #' @param ITS1 (\code{logical} scalar) if \code{TRUE}, include sequence fragment
 #'     before 5.8S (if any) as ITS1
-#' @param cpu (\code{integer} scalar) number of threads to use in Infernal calls
-#' @param mxsize (\code{double} scalar) passed on to
-#'     \code{\link[inferrnal]{cmalign}}
+#' @param cpu (\code{integer} scalar) number of threads to use in Infernal
+#'     calls.  If length is greater than 1, then if
+#'     \code{\link[inferrnal]{cmalign}} fails, it will be retried with
+#'     subsequent values.
+#' @param mxsize (\code{double} scalar or vector) passed on to
+#'     \code{\link[inferrnal]{cmalign}}.  If length is greater than 1, then if
+#'     \code{\link[inferrnal]{cmalign}} fails, it will be retried with
+#'     subsequent values.
 #' @param quiet (\code{logical} scalar) passed on to
 #'     \code{\link[inferrnal]{cmsearch}}
 #'
@@ -408,7 +413,9 @@ lsux <- function(
     cms <- dplyr::filter(cms, dplyr::n() == 1)
     cms <- dplyr::ungroup(cms)
     futile.logger::flog.info(
-        "%d sequences contained a single 5.8S hit.", nrow(cms),
+        "%d/%d sequences contained a single 5.8S hit.",
+        nrow(cms),
+        length(seq$seq),
         name = "LSUx"
     )
 
@@ -425,14 +432,27 @@ lsux <- function(
     seq_idx <- as.integer(cms$target_name)
     seq_32S <- IRanges::narrow(seq$seq[seq_idx], start = cms$seq_from)
 
-    futile.logger::flog.info("Beginning CM alignment.", name = "LSUx")
-    aln <- inferrnal::cmalign(
-        cmfile = cm_32S,
-        seq = seq_32S,
-        global = global,
-        cpu = cpu,
-        mxsize = mxsize
-    )
+
+    if (is.null(cpu)) cpu <- list(cpu)
+    if (is.null(mxsize)) mxsize <- list(mxsize)
+    aln_params <- tibble::tibble(cpu, mxsize)
+    aln <- list()
+    while (is.null(aln$alignment) && nrow(aln_params)) {
+        futile.logger::flog.info(
+            "Beginning CM alignment with mxsize=%s and cpu=%s.",
+            aln_params$cpu[[1]],
+            aln_params$mxsize[[1]],
+            name = "LSUx"
+        )
+        aln <- inferrnal::cmalign(
+            cmfile = cm_32S,
+            seq = seq_32S,
+            global = global,
+            cpu = aln_params$cpu[[1]],
+            mxsize = aln_params$mxsize[[1]]
+        )
+        aln_params <- aln_params[-1,]
+    }
 
     futile.logger::flog.info("Extracting LSU regions.", name = "LSUx")
     pos <- extract_LSU(aln = aln$alignment, rf = aln$GC$RF)

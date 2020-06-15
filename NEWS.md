@@ -8,6 +8,9 @@
 * Add functions to truncate Stockholm alignments and repair secondary structure
   annotations.
 * Add option "quiet" to `lsux()` to suppress `cmsearch` output.
+* Multiple values can be passed to `mxsize` and `cpu` arguments of `lsux()`. In
+  this case, on failure of `cmalign`, it will be restarted with the second,
+  third, etc. values.
 
 # LSUx 0.99.5
 

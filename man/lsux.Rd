@@ -38,10 +38,15 @@ to extract regions from}
 \item{ITS1}{(\code{logical} scalar) if \code{TRUE}, include sequence fragment
 before 5.8S (if any) as ITS1}
 
-\item{cpu}{(\code{integer} scalar) number of threads to use in Infernal calls}
+\item{cpu}{(\code{integer} scalar) number of threads to use in Infernal
+calls.  If length is greater than 1, then if
+\code{\link[inferrnal]{cmalign}} fails, it will be retried with
+subsequent values.}
 
-\item{mxsize}{(\code{double} scalar) passed on to
-\code{\link[inferrnal]{cmalign}}}
+\item{mxsize}{(\code{double} scalar or vector) passed on to
+\code{\link[inferrnal]{cmalign}}.  If length is greater than 1, then if
+\code{\link[inferrnal]{cmalign}} fails, it will be retried with
+subsequent values.}
 
 \item{quiet}{(\code{logical} scalar) passed on to
 \code{\link[inferrnal]{cmsearch}}}
