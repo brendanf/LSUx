@@ -396,6 +396,9 @@ lsux <- function(
         assertthat::is.flag(ITS1)
     )
 
+    if (is.null(cpu)) cpu <- list(cpu)
+    if (is.null(mxsize)) mxsize <- list(mxsize)
+
     seq <- protect_names(seq)
 
     futile.logger::flog.info("Beginning CM search.", name = "LSUx")
@@ -403,7 +406,7 @@ lsux <- function(
         cm = cm_5.8S,
         seq = seq$seq,
         glocal = glocal,
-        cpu = cpu,
+        cpu = cpu[[1]],
         quiet = quiet
     )
 
@@ -432,9 +435,6 @@ lsux <- function(
     seq_idx <- as.integer(cms$target_name)
     seq_32S <- IRanges::narrow(seq$seq[seq_idx], start = cms$seq_from)
 
-
-    if (is.null(cpu)) cpu <- list(cpu)
-    if (is.null(mxsize)) mxsize <- list(mxsize)
     aln_params <- tibble::tibble(cpu, mxsize)
     aln <- list()
     while (is.null(aln$alignment) && nrow(aln_params)) {
