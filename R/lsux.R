@@ -440,8 +440,8 @@ lsux <- function(
     while (is.null(aln$alignment) && nrow(aln_params)) {
         futile.logger::flog.info(
             "Beginning CM alignment with mxsize=%s and cpu=%s.",
-            aln_params$cpu[[1]],
             aln_params$mxsize[[1]],
+            aln_params$cpu[[1]],
             name = "LSUx"
         )
         aln <- inferrnal::cmalign(
