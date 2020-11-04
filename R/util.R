@@ -33,23 +33,23 @@ gather_regions <- function(pos) {
     dplyr::arrange(out, !!!rlang::parse_exprs(hvars), start)
 }
 
-spread_regions <- function(pos) {
-    hvars <- setdiff(names(pos), c("region", "start", "end"))
-
-    starts <- dplyr::select(pos, -"end")
-    starts <- dplyr::mutate_at(starts, "region", paste0, "_start")
-    starts <- tidyr::spread(starts, key = "region", value = "start")
-
-    ends <- dplyr::select(pos, -start)
-    ends <- dplyr::mutate_at(ends, "region", paste0, "_end")
-    ends <- tidyr::spread(ends, key = "region", value = "end")
-
-    out <- dplyr::full_join(starts, ends, by = hvars)
-    outhead <- out[hvars]
-    outvals <- dplyr::select(out, -!!hvars)
-    outvals <- outvals[order(apply(outvals, 2, stats::median))]
-    dplyr::bind_cols(outhead, outvals)
-}
+# spread_regions <- function(pos) {
+#     hvars <- setdiff(names(pos), c("region", "start", "end"))
+#
+#     starts <- dplyr::select(pos, -"end")
+#     starts <- dplyr::mutate_at(starts, "region", paste0, "_start")
+#     starts <- tidyr::spread(starts, key = "region", value = "start")
+#
+#     ends <- dplyr::select(pos, -start)
+#     ends <- dplyr::mutate_at(ends, "region", paste0, "_end")
+#     ends <- tidyr::spread(ends, key = "region", value = "end")
+#
+#     out <- dplyr::full_join(starts, ends, by = hvars)
+#     outhead <- out[hvars]
+#     outvals <- dplyr::select(out, -!!hvars)
+#     outvals <- outvals[order(apply(outvals, 2, stats::median))]
+#     dplyr::bind_cols(outhead, outvals)
+# }
 
 #' @importClassesFrom Biostrings DNAStringSet
 #' @importClassesFrom ShortRead ShortRead
