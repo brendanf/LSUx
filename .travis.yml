@@ -1,10 +1,6 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: r
-r:
-  - oldrel
-  - release
-  - devel
 cache: packages
 apt-packages:
   - infernal
@@ -13,5 +9,18 @@ before_script:
   - wget https://microbiology.se/sw/ITSx_1.1.2.tar.gz -O /tmp/ITSx.tar.gz
   - tar -xvf /tmp/ITSx.tar.gz -C /tmp
   - export PATH=$PATH:/tmp/ITSx_1.1.2
+matrix:
+  - r: oldrel
+    bioc_packages: ShortRead
+    bioc_check: false
+  - r: bioc-release
+    bioc_packages:
+      - BiocCheck
+      - ShortRead
+    bioc_check: true
+    after_success: Rscript -e 'covr::codecov()'
+  - r: bioc-devel
+    bioc_packages: ShortRead
+    bioc_check: true
 after_success:
   - Rscript -e 'covr::codecov()'
