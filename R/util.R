@@ -106,10 +106,10 @@ methods::setAs(
 
 sreadq_to_qsDNAss <- function(from) {
     quality <- Biostrings::quality(from)
-    if (methods::is(quality, "FastqQuality")) {
-        quality <- methods::as(quality, "PhredQuality")
-    } else if (methods::is(quality, "SFastqQuality")) {
+    if (methods::is(quality, "SFastqQuality")) {
         quality <- methods::as(quality, "SolexaQuality")
+    } else if (methods::is(quality, "FastqQuality")) {
+        quality <- methods::as(quality, "PhredQuality")
     }
     to = Biostrings::QualityScaledDNAStringSet(
         x = ShortRead::sread(from),
