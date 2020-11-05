@@ -2,7 +2,7 @@
 
 language: r
 cache: packages
-apt-packages:
+apt_packages:
   - infernal
   - hmmer
 addons:
@@ -27,8 +27,8 @@ jobs:
         - r: bioc-devel
     include:
         - r: bioc-release
-            bioc_packages:
-                - BiocCheck
-                - ShortRead
-            bioc_check: true
-            after_success: Rscript -e 'covr::codecov()'
+          bioc_packages:
+            - BiocCheck
+            - ShortRead
+          bioc_check: true
+          after_success: Rscript -e 'covr::codecov()'
