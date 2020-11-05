@@ -586,7 +586,7 @@ truncate_alignment <- function(alnfile, outfile, start = 1L, stop = 1000000L) {
         )
         outfile <- file(outfile, "wt")
     } else {
-        stop("'outfile' should be a file name or readable connection")
+        stop("'outfile' should be a file name or writeable connection")
     }
 
     on.exit(close(outfile))
