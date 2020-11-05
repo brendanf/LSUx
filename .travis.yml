@@ -7,7 +7,7 @@ apt_packages:
   - hmmer
 addons:
   homebrew:
-    taps: homebrew/science
+    taps: brewsci/bio
     packages:
         - infernal
         - hmmer
