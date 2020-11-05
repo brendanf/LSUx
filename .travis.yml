@@ -22,5 +22,3 @@ matrix:
   - r: bioc-devel
     bioc_packages: ShortRead
     bioc_check: true
-after_success:
-  - Rscript -e 'covr::codecov()'
