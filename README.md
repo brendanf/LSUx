@@ -3,8 +3,8 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.com/brendanf/LSUx.svg?branch=master)](https://travis-ci.com/brendanf/LSUx)
+[![R build
+status](https://github.com/brendanf/LSUx/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/brendanf/LSUx/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/brendanf/LSUx/branch/master/graph/badge.svg)](https://codecov.io/gh/brendanf/LSUx?branch=master)
 <!-- badges: end -->
@@ -56,13 +56,13 @@ can be [RF00002 from Rfam](https://rfam.xfam.org/family/RF00002) (the
 default), or an equivalent. If using a custom CM, it must be calibrated
 using `cmcalibrate` from Infernal.
 
-The 32S model must include annotations in the reference line (“`#=GC
-RF`” in the seed alignment) to distinguish conserved and variable
-regions. The annotations should be sequential characters in the range
-`1..9A..Z` for conserved domains, “`v`” for variable domains, and “`.`”
-for unaligned gaps in the seed alignment. In the output, the conserved
-domains will be named “5\_8S”, “LSU1”, “LSU2”, …; the variable domains
-will be named “ITS2”, “V1”, “V2”, …
+The 32S model must include annotations in the reference line
+(“`#=GC RF`” in the seed alignment) to distinguish conserved and
+variable regions. The annotations should be sequential characters in the
+range `1..9A..Z` for conserved domains, “`v`” for variable domains, and
+“`.`” for unaligned gaps in the seed alignment. In the output, the
+conserved domains will be named “5\_8S”, “LSU1”, “LSU2”, …; the variable
+domains will be named “ITS2”, “V1”, “V2”, …
 
 Two example models are included, both based on the [RDP fungal LSU
 CM](https://github.com/rdpstaff/fungene_pipeline/blob/master/%%20resources/RRNA_28S/model.cm),
@@ -118,10 +118,10 @@ for each sequence.
 regions <- lsux(seq, cm_32S = cm_32S_trunc, ITS1 = TRUE, cpu = 1)
 ```
 
-    ## INFO [2020-06-14 22:00:26] Beginning CM search.
-    ## INFO [2020-06-14 22:00:27] 48 sequences contained a single 5.8S hit.
-    ## INFO [2020-06-14 22:00:27] Beginning CM alignment.
-    ## INFO [2020-06-14 22:00:45] Extracting LSU regions.
+    ## INFO [2021-03-03 15:21:55] Beginning CM search.
+    ## INFO [2021-03-03 15:21:56] 48/50 sequences contained a single 5.8S hit.
+    ## INFO [2021-03-03 15:21:56] Beginning CM alignment with mxsize=NULL and cpu=1.
+    ## INFO [2021-03-03 15:22:14] Extracting LSU regions.
 
 ``` r
 regions
