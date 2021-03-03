@@ -140,11 +140,13 @@ jobs:
           ## install infernal
           brew tap brewsci/bio
           brew install infernal
-      - name: Install ITSx from conda
-        uses: actions/checkout@v2
+
+      - name: Setup conda
         uses: s-weigans/setup-conda@v1
         with:
             conda-channels: 'bioconda'
+
+      - name: Install ITSx from conda
         run: conda install itsx
 
       - name: Install Windows system dependencies
