@@ -142,9 +142,11 @@ jobs:
           brew install infernal
 
       - name: Setup conda
-        uses: s-weigand/setup-conda@v1
+        uses: conda-incubator/setup-miniconda@v2
         with:
-            conda-channels: 'bioconda'
+          auto-activate-base: true
+          activate-environment: ""
+          channels: bioconda
 
       - name: Install ITSx from conda
         run: conda install itsx
