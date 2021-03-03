@@ -2,6 +2,14 @@
 #' @importFrom dplyr .data
 utils::globalVariables(c(".", "end", "start", "seq_from", "seq_to"))
 
+#' Sample ITSx results from difficult sequences.
+#'
+#' The sequences are a selection of the sample sequences from \code{inferrnal},
+#' specifically elements \code{[c(1,4,20,32,33,43,46,49)]}.  These were chosen
+#' particularly to give bad 5.8S detection results, and are not representative
+#' of normal results from ITSx.
+"itsx_result"
+
 #### LSUx ####
 # functions to extract LSU and associated regions/domains from rRNA amplicons.
 # also includes file I/O for stockholm and clustal alignments with RNA secondary
@@ -36,13 +44,15 @@ utils::globalVariables(c(".", "end", "start", "seq_from", "seq_to"))
 #' )
 #' # ITSx has trouble with some of the reads
 #' seq <- Biostrings::readDNAStringSet(seqfile)[c(1,4,20,32,33,43,46,49)]
-#' itsx_result <- rITSx::itsx(
-#'     in_file = seq,
-#'     positions = TRUE,
-#'     complement = FALSE,
-#'     cpu = 1,
-#'     read_function = Biostrings::readDNAStringSet
-#' )
+#' # the result from ITSx is included as a dataset to avoid a package
+#' # dependency, but this is the code to generate it.
+#' #itsx_result <- rITSx::itsx(
+#' #    in_file = seq,
+#' #    positions = TRUE,
+#' #    complement = FALSE,
+#' #    cpu = 1,
+#' #    read_function = Biostrings::readDNAStringSet
+#' #)
 #' pos <- itsx_result$positions
 #' pos[pos$region == "5_8S",]
 #' # find 5.8S using cmsearch

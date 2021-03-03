@@ -38,7 +38,7 @@ Suggests:
     rmarkdown,
     covr,
     testthat (>= 2.1.0)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 biocViews:
     SequenceMatching,
     ThirdPartyClient,
@@ -53,3 +53,5 @@ VignetteBuilder: knitr
 Remotes:
     brendanf/inferrnal,
     brendanf/rITSx
+Depends: 
+    R (>= 2.10)

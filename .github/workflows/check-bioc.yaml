@@ -141,17 +141,6 @@ jobs:
           brew tap brewsci/bio
           brew install infernal
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2.0.1
-        with:
-          auto-activate-base: true
-          activate-environment: ""
-          channels: bioconda
-          miniconda-version: latest
-
-      - name: Install ITSx from conda
-        run: conda install itsx
-
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
         run: |

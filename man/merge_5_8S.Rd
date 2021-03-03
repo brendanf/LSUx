@@ -36,13 +36,15 @@ seqfile <- system.file(
 )
 # ITSx has trouble with some of the reads
 seq <- Biostrings::readDNAStringSet(seqfile)[c(1,4,20,32,33,43,46,49)]
-itsx_result <- rITSx::itsx(
-    in_file = seq,
-    positions = TRUE,
-    complement = FALSE,
-    cpu = 1,
-    read_function = Biostrings::readDNAStringSet
-)
+# the result from ITSx is included as a dataset to avoid a package
+# dependency, but this is the code to generate it.
+#itsx_result <- rITSx::itsx(
+#    in_file = seq,
+#    positions = TRUE,
+#    complement = FALSE,
+#    cpu = 1,
+#    read_function = Biostrings::readDNAStringSet
+#)
 pos <- itsx_result$positions
 pos[pos$region == "5_8S",]
 # find 5.8S using cmsearch

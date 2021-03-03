@@ -1,3 +1,7 @@
+# Development version
+
+* Added tests for most functionality.
+
 # LSUx 0.99.6
 
 * When input sequences to `lsux()` are unnamed, use index (as character) for
