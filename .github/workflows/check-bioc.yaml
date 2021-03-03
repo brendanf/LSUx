@@ -142,7 +142,7 @@ jobs:
           brew install infernal
 
       - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2.0.1
         with:
           auto-activate-base: true
           activate-environment: ""
