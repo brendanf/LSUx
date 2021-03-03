@@ -147,7 +147,7 @@ jobs:
           auto-activate-base: true
           activate-environment: ""
           channels: bioconda
-          miniforge-version: latest
+          miniconda-version: latest
 
       - name: Install ITSx from conda
         run: conda install itsx
