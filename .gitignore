@@ -4,3 +4,6 @@
 .Ruserdata
 inst/doc
 LSUx.Rproj
+renv
+renv.lock
+.Rprofile
