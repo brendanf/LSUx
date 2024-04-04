@@ -61,7 +61,7 @@ The 32S model must include annotations in the reference line
 variable regions. The annotations should be sequential characters in the
 range `1..9A..Z` for conserved domains, “`v`” for variable domains, and
 “`.`” for unaligned gaps in the seed alignment. In the output, the
-conserved domains will be named “5\_8S”, “LSU1”, “LSU2”, …; the variable
+conserved domains will be named “5_8S”, “LSU1”, “LSU2”, …; the variable
 domains will be named “ITS2”, “V1”, “V2”, …
 
 Two example models are included, both based on the [RDP fungal LSU
@@ -71,7 +71,7 @@ includes the full LSU region.
 
 ``` r
 cm_full <- system.file(
-    file.path("extdata", "fungal_32S.cm"),
+    file.path("extdata", "fungi_32S.cm"),
     package = "LSUx"
 )
 ```
@@ -82,7 +82,7 @@ point.
 
 ``` r
 cm_trunc <- system.file(
-    file.path("extdata", "fungal_32S_LR5.cm"),
+    file.path("extdata", "fungi_32S_LR5.cm"),
     package = "LSUx"
 )
 ```
@@ -90,8 +90,8 @@ cm_trunc <- system.file(
 The seed alignments are also provided; they can be accessed using:
 
 ``` r
-system.file(file.path("extdata", "fungal_32S.stk"), package = "LSUx")
-system.file(file.path("extdata", "fungal_32S_LR5.stk"), package = "LSUx")
+system.file(file.path("extdata", "fungi_32S.stk"), package = "LSUx")
+system.file(file.path("extdata", "fungi_32S_LR5.stk"), package = "LSUx")
 ```
 
 The sample data is from an environmental metabarcoding study focusing on
@@ -118,16 +118,16 @@ for each sequence.
 regions <- lsux(seq, cm_32S = cm_32S_trunc, ITS1 = TRUE, cpu = 1)
 ```
 
-    ## INFO [2021-03-03 15:21:55] Beginning CM search.
-    ## INFO [2021-03-03 15:21:56] 48/50 sequences contained a single 5.8S hit.
-    ## INFO [2021-03-03 15:21:56] Beginning CM alignment with mxsize=NULL and cpu=1.
-    ## INFO [2021-03-03 15:22:14] Extracting LSU regions.
+    ## INFO [2024-04-04 18:12:21] Beginning CM search.
+    ## INFO [2024-04-04 18:12:21] 48/50 sequences contained a single 5.8S hit.
+    ## INFO [2024-04-04 18:12:21] Beginning CM alignment with mxsize=NULL and cpu=1.
+    ## INFO [2024-04-04 18:12:34] Extracting LSU regions.
 
 ``` r
 regions
 ```
 
-    ## # A tibble: 480 x 5
+    ## # A tibble: 480 × 5
     ##    seq_id length region start   end
     ##    <chr>   <int> <chr>  <int> <int>
     ##  1 seq1     1404 ITS1       1   114
@@ -140,4 +140,4 @@ regions
     ##  8 seq1     1404 LSU3    1107  1147
     ##  9 seq1     1404 V4      1148  1242
     ## 10 seq1     1404 LSU4    1243  1404
-    ## # … with 470 more rows
+    ## # ℹ 470 more rows

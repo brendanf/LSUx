@@ -76,7 +76,7 @@ The first, includes the full LSU region.
 
 ```{r}
 cm_full <- system.file(
-    file.path("extdata", "fungal_32S.cm"),
+    file.path("extdata", "fungi_32S.cm"),
     package = "LSUx"
 )
 ```
@@ -86,7 +86,7 @@ and should be faster for input sequences which do not extend past that point.
 
 ```{r}
 cm_trunc <- system.file(
-    file.path("extdata", "fungal_32S_LR5.cm"),
+    file.path("extdata", "fungi_32S_LR5.cm"),
     package = "LSUx"
 )
 ```
@@ -94,8 +94,8 @@ cm_trunc <- system.file(
 The seed alignments are also provided; they can be accessed using:
 
 ```r
-system.file(file.path("extdata", "fungal_32S.stk"), package = "LSUx")
-system.file(file.path("extdata", "fungal_32S_LR5.stk"), package = "LSUx")
+system.file(file.path("extdata", "fungi_32S.stk"), package = "LSUx")
+system.file(file.path("extdata", "fungi_32S_LR5.stk"), package = "LSUx")
 ```
 
 The sample data is from an environmental metabarcoding study focusing on fungi.
