@@ -468,7 +468,7 @@ lsux <- function(
     }
 
     futile.logger::flog.info("Extracting LSU regions.", name = "LSUx")
-    pos <- extract_LSU(aln = aln$alignment, rf = aln$GC$RF)
+    pos <- extract_LSU(aln = aln, rf = aln@GC$RF)
     pos <- dplyr::mutate_at(
         pos,
         "seq_id",
