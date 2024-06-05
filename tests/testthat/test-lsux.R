@@ -51,11 +51,9 @@ test_that(
     {
         names(test_DNAss) <- NULL
         lsux_noname <- lsux(test_DNAss)
-        expect_true(
-            dplyr::all_equal(
-                spread_regions(lsux_noname)[-1],
-                spread_regions(lsux_file)[-1]
-            )
+        expect_equal(
+          spread_regions(lsux_noname)[-1],
+          spread_regions(lsux_file)[-1]
         )
     }
 )
