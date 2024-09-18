@@ -8,23 +8,23 @@ merge_5_8S(itsx_result, csearch_result)
 }
 \arguments{
 \item{itsx_result}{(\code{data.frame}) "positions" results from
-\code{\link[rITSx]{itsx}}}
+\code{\link[rITSx:itsx]{rITSx::itsx()}}}
 
 \item{csearch_result}{(\code{data.frame}) results from
-\code{\link[inferrnal]{cmsearch}} run on the same set of sequences,
+\code{\link[inferrnal:cmsearch]{inferrnal::cmsearch()}} run on the same set of sequences,
 using a 5.8S RNA model such as
 \href{https://rfam.xfam.org/family/RF00002/cm}{RF00002}}
 }
 \value{
-a \code{\link[tibble]{tibble}} in the same format output by
-    \code{\link[rITSx]{itsx}}, with updated positions for the boundaries of
-    5.8S.
+a \code{\link[tibble:tibble]{tibble::tibble}} in the same format output by
+\code{\link[rITSx:itsx]{rITSx::itsx()}}, with updated positions for the boundaries of
+5.8S.
 }
 \description{
 The 3' end of the 5.8S RNA is quite variable, and it is sometimes not
 detected by the HMM used in ITSx.
 Using a CMs, Infernal is able to more reliably delimit 5.8S.
-This function uses the results of \code{\link[inferrnal]{cmsearch}} to
+This function uses the results of \code{\link[inferrnal:cmsearch]{inferrnal::cmsearch()}} to
 fill in missing 5.8S annotations in ITSx results.  It also updates the end of
 ITS1 and beginning of ITS2 to match.
 }

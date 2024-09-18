@@ -12,7 +12,7 @@ itsx_result
 }
 \description{
 The sequences are a selection of the sample sequences from \code{inferrnal},
-specifically elements \code{[c(1,4,20,32,33,43,46,49)]}.  These were chosen
+specifically elements \verb{[c(1,4,20,32,33,43,46,49)]}.  These were chosen
 particularly to give bad 5.8S detection results, and are not representative
 of normal results from ITSx.
 }

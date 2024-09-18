@@ -7,20 +7,21 @@
 truncate_alignment(alnfile, outfile, start = 1L, stop = 1000000L)
 }
 \arguments{
-\item{alnfile}{(\code{character} filename or \code{\link{connection}}) the
-stockholm alignment to be truncated.}
+\item{alnfile}{(\code{character} filename or \code{\link{connection}})
+the stockholm alignment to be truncated.}
 
-\item{outfile}{(\code{character} filename or \code{\link{connection}}) path
-or connection to output the truncated alignment to.}
+\item{outfile}{(\code{character} filename or \code{\link{connection}})
+path or connection to output the truncated alignment to. The default, \code{NULL},
+instead returns the truncated alignment as an R object.}
 
-\item{start}{(\code{integer} scalar) first base to include in the truncated
-alignment.}
+\item{start}{(\code{integer} scalar)
+first base to include in the truncated alignment.}
 
-\item{stop}{(\code{integer} scalar) last base to include in the truncated
-alignment.}
+\item{stop}{(\code{integer} scalar)
+last base to include in the truncated alignment.}
 }
 \value{
-NULL (invisibly)
+\code{NULL} (invisibly).
 }
 \description{
 Simply truncating a Stockholm alignment file that includes secondary

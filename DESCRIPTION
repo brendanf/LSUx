@@ -55,3 +55,4 @@ Remotes:
     brendanf/rITSx
 Depends: 
     R (>= 4.1)
+Roxygen: list(markdown = TRUE)

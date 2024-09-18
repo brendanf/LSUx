@@ -4,8 +4,8 @@ utils::globalVariables(c(".", "end", "start", "seq_from", "seq_to"))
 
 #' Sample ITSx results from difficult sequences.
 #'
-#' The sequences are a selection of the sample sequences from \code{inferrnal},
-#' specifically elements \code{[c(1,4,20,32,33,43,46,49)]}.  These were chosen
+#' The sequences are a selection of the sample sequences from `inferrnal`,
+#' specifically elements `[c(1,4,20,32,33,43,46,49)]`.  These were chosen
 #' particularly to give bad 5.8S detection results, and are not representative
 #' of normal results from ITSx.
 "itsx_result"
@@ -20,19 +20,19 @@ utils::globalVariables(c(".", "end", "start", "seq_from", "seq_to"))
 #' The 3' end of the 5.8S RNA is quite variable, and it is sometimes not
 #' detected by the HMM used in ITSx.
 #' Using a CMs, Infernal is able to more reliably delimit 5.8S.
-#' This function uses the results of \code{\link[inferrnal]{cmsearch}} to
+#' This function uses the results of [inferrnal::cmsearch()] to
 #' fill in missing 5.8S annotations in ITSx results.  It also updates the end of
 #' ITS1 and beginning of ITS2 to match.
 #'
-#' @param itsx_result (\code{data.frame}) "positions" results from
-#'     \code{\link[rITSx]{itsx}}
-#' @param csearch_result (\code{data.frame}) results from
-#'     \code{\link[inferrnal]{cmsearch}} run on the same set of sequences,
+#' @param itsx_result (`data.frame`) "positions" results from
+#'     [rITSx::itsx()]
+#' @param csearch_result (`data.frame`) results from
+#'     [inferrnal::cmsearch()] run on the same set of sequences,
 #'     using a 5.8S RNA model such as
-#'     \href{https://rfam.xfam.org/family/RF00002/cm}{RF00002}
+#'     [RF00002](https://rfam.xfam.org/family/RF00002/cm)
 #'
-#' @return a \code{\link[tibble]{tibble}} in the same format output by
-#'     \code{\link[rITSx]{itsx}}, with updated positions for the boundaries of
+#' @return a [`tibble::tibble`] in the same format output by
+#'     [rITSx::itsx()], with updated positions for the boundaries of
 #'     5.8S.
 #' @export
 #'
@@ -295,81 +295,81 @@ extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
 #'
 #' Input sequences should contain, at a minimum, a significant fraction of the
 #' 5.8S RNA, which is used to define the 5' end of 32S. Any base pairs before
-#' the 5' end of 5.8S will be considered to be ITS1 (\code{ITS1 = TRUE}) or
-#' discarded (\code{ITS1 = FALSE}).  Input sequences should not extend past the
+#' the 5' end of 5.8S will be considered to be ITS1 (`ITS1 = TRUE`) or
+#' discarded (`ITS1 = FALSE`).  Input sequences should not extend past the
 #' end of the 32S model at the 3' end.
 #'
 #' LSUx requires two covariance models: one for 5.8S, which is used in
-#' \code{\link[inferrnal]{cmsearch}}, and one for 32S, which is used in
-#' \code{\link[inferrnal]{cmalign}}.
+#' [inferrnal::cmsearch()], and one for 32S, which is used in
+#' [inferrnal::cmalign()].
 #'
 #' The 5.8S model can be
-#' \href{https://rfam.xfam.org/family/RF00002}{RF00002 from Rfam} (the default),
-#' or an equivalent.  It must be calibrated using \code{cmcalibrate} from
-#' Infernal.
+#' [RF00002 from Rfam](https://rfam.xfam.org/family/RF00002) (the default),
+#' or an equivalent.  It must be calibrated using `cmcalibrate` from
+#' Infernal (e.g., via [inferrnal::cmcalibrate()]).
 #'
 #' The 32S model must include annotations in the reference line ("#=GC RF" in
 #' the seed alignment) to distinguish conserved and variable regions. The
-#' annotations should be sequential characters in the range \code{"1..9A..Z"}
-#' for conserved domains, \code{"v"} for variable domains, and \code{"."} for
+#' annotations should be sequential characters in the range `"1..9A..Z"`
+#' for conserved domains, `"v"` for variable domains, and `"."` for
 #' unaligned gaps in the seed alignment.
 #' In the output, the conserved domains will be named "5_8S", "LSU1", "LSU2",
 #' ...; the variable domains will be named "ITS2", "V1", "V2", ...
 #'
 #' Two example models are included,
 #' both based on the
-#' \href{https://github.com/rdpstaff/fungene_pipeline/blob/master/resources/RRNA_28S/model.cm}{RDP fungal LSU CM},
+#' [RDP fungal LSU CM](https://github.com/rdpstaff/fungene_pipeline/blob/master/resources/RRNA_28S/model.cm),
 #' and annotated with variable regions according to Raué (1988).
-#' The first, \code{system.file(file.path("extdata", "fungal_32S.cm"),
-#' package = "LSUx")}, includes the full LSU region.  The second,
-#' \code{system.file(file.path("extdata", "fungal_32S_LR5.cm"),
-#' package = "LSUx")}, is truncated at the binding site of the LR5 primer, and
+#' The first, `system.file(file.path("extdata", "fungal_32S.cm"),
+#' package = "LSUx")`, includes the full LSU region.  The second,
+#' `system.file(file.path("extdata", "fungal_32S_LR5.cm"),
+#' package = "LSUx")`, is truncated at the binding site of the LR5 primer, and
 #' should be faster for input sequences which do not extend past that point.
 #' The seed alignments are also provided.
 #'
 #' If generating similar truncated alignments with different endpoints, it is
 #' critical to remove unpaired secondary structure elements from the
-#' \code{"#=GC SS_cons"} line of the seed alignment.
+#' `"#=GC SS_cons"` line of the seed alignment.
 #'
 #' @param seq (single filename readable by
-#'     \code{\link[Biostrings:XStringSet-io]{readBStringSet}},
-#'     \code{\link[Biostrings]{XStringSet-class}},
-#'     \code{\link[ShortRead]{ShortRead-class}},
-#'     or \code{character} vector) sequences
+#'     [`readBStringSet()`][Biostrings::XStringSet-io],
+#'     object of class [`Biostrings::XStringSet`][Biostrings::XStringSet-class]
+#'     or [`ShortRead::ShortRead`][ShortRead::ShortRead-class],
+#'     or `character` vector) sequences
 #'     to extract regions from
 #' @param cm_5.8S (filename) covariance model for 5.8S rRNA
 #' @param cm_32S (filename) covariance model for 32S pre-rRNA
 #'     (5.8S, ITS2, and LSU)
-#' @param glocal (\code{logical} scalar) if \code{TRUE}, use glocal alignment in
-#'     \code{\link[inferrnal]{cmsearch}}
-#' @param global (\code{logical} scalar) if \code{TRUE}, use global alignment in
-#'     \code{\link[inferrnal]{cmalign}}
-#' @param ITS1 (\code{logical} scalar) if \code{TRUE}, include sequence fragment
+#' @param glocal (`logical` scalar) if `TRUE`, use glocal alignment in
+#'     [inferrnal::cmsearch()]
+#' @param global (`logical` scalar) if `TRUE`, use global alignment in
+#'     [inferrnal::cmalign()]
+#' @param ITS1 (`logical` scalar) if `TRUE`, include sequence fragment
 #'     before 5.8S (if any) as ITS1
-#' @param cpu (\code{integer} scalar) number of threads to use in Infernal
+#' @param cpu (`integer` scalar) number of threads to use in Infernal
 #'     calls.  If length is greater than 1, then if
-#'     \code{\link[inferrnal]{cmalign}} fails, it will be retried with
+#'     [inferrnal::cmalign()] fails, it will be retried with
 #'     subsequent values.
-#' @param mxsize (\code{double} scalar or vector) passed on to
-#'     \code{\link[inferrnal]{cmalign}}.  If length is greater than 1, then if
-#'     \code{\link[inferrnal]{cmalign}} fails, it will be retried with
+#' @param mxsize (`double` scalar or vector) passed on to
+#'     [inferrnal::cmalign()].  If length is greater than 1, then if
+#'     [inferrnal::cmalign()] fails, it will be retried with
 #'     subsequent values.
-#' @param quiet (\code{logical} scalar) passed on to
-#'     \code{\link[inferrnal]{cmsearch}}
+#' @param quiet (`logical` scalar) passed on to
+#'     [inferrnal::cmsearch()]
 #'
-#' @return a \code{\link[tibble]{tibble}} with one row for each region found for
+#' @return a [`tibble::tibble`] with one row for each region found for
 #'     each input sequence.
 #'     The columns are: \describe{
-#'         \item{\code{seq_id} (\code{character})}{ the sequence name from
-#'             \code{seq}}
-#'         \item{\code{length} (\code{integer})}{ the length of the original
+#'         \item{`seq_id` (`character`)}{ the sequence name from
+#'             `seq`}
+#'         \item{`length` (`integer`)}{ the length of the original
 #'             sequence in base pairs}
-#'         \item{\code{region} (\code{character})}{ the name of the found
-#'             domain. Can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"},
-#'             \code{"V2"}, \code{"LSU2"}, \code{"V3"}, etc.}
-#'         \item{\code{start} (\code{integer})}{the starting base for that
+#'         \item{`region` (`character`)}{ the name of the found
+#'             domain. Can be `"5_8S"`, `"ITS2"`, `"LSU1"`,
+#'             `"V2"`, `"LSU2"`, `"V3"`, etc.}
+#'         \item{`start` (`integer`)}{the starting base for that
 #'             domain in this sequence.}
-#'         \item{\code{end} (\code{integer})}{as \code{start}, but giving the
+#'         \item{`end` (`integer`)}{as `start`, but giving the
 #'             end base for the domain.}}
 #' @export
 #'
@@ -506,9 +506,9 @@ lsux <- function(
 
 #' Replaced unmatched brackets in a dot-bracket RNA secondary structure
 #'
-#' @param ss (\code{character} scalar) the secondary structure to repair.
+#' @param ss (`character` scalar) the secondary structure to repair.
 #'
-#' @return (\code{character} scalar) the repaired secondary structure.
+#' @return (`character` scalar) the repaired secondary structure.
 #' @export
 #'
 #' @examples
@@ -556,16 +556,21 @@ repair_unmatched_secondary_structure <- function(ss) {
 #' of a pair is removed. This function converts these half-pairs to "X",
 #' indicating unpairable bases.
 #'
-#' @param alnfile (\code{character} filename or \code{\link{connection}}) the
-#'     stockholm alignment to be truncated.
-#' @param outfile (\code{character} filename or \code{\link{connection}}) path
-#'     or connection to output the truncated alignment to.
-#' @param start (\code{integer} scalar) first base to include in the truncated
-#'     alignment.
-#' @param stop (\code{integer} scalar) last base to include in the truncated
-#'     alignment.
+#' @param alnfile
+#' (`character` filename or [`connection`])
+#' the stockholm alignment to be truncated.
+#' @param outfile
+#' (`character` filename or [`connection`])
+#' path or connection to output the truncated alignment to. The default, `NULL`,
+#' instead returns the truncated alignment as an R object.
+#' @param start
+#' (`integer` scalar)
+#' first base to include in the truncated alignment.
+#' @param stop
+#' (`integer` scalar)
+#' last base to include in the truncated alignment.
 #'
-#' @return NULL (invisibly)
+#' @return `NULL` (invisibly).
 #' @export
 #'
 #' @examples
