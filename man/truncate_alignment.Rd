@@ -4,10 +4,11 @@
 \alias{truncate_alignment}
 \title{Truncate an annotated Stockholm alignment file with secondary structure}
 \usage{
-truncate_alignment(alnfile, outfile, start = 1L, stop = 1000000L)
+truncate_alignment(aln, outfile = NULL, start = 1L, stop = 1000000L)
 }
 \arguments{
-\item{alnfile}{(\code{character} filename or \code{\link{connection}})
+\item{aln}{(\code{character} filename, \code{\link{connection}}, or
+\code{\link[inferrnal:StockholmMultipleAlignment-class]{StockholmMultipleAlignment}})
 the stockholm alignment to be truncated.}
 
 \item{outfile}{(\code{character} filename or \code{\link{connection}})
@@ -21,7 +22,9 @@ first base to include in the truncated alignment.}
 last base to include in the truncated alignment.}
 }
 \value{
-\code{NULL} (invisibly).
+the truncated alignment as a
+\code{\link[inferrnal:StockholmMultipleAlignment-class]{StockholmMultipleAlignment}}
+object, or if outfile is given then \code{NULL} (invisibly).
 }
 \description{
 Simply truncating a Stockholm alignment file that includes secondary
@@ -30,6 +33,6 @@ of a pair is removed. This function converts these half-pairs to "X",
 indicating unpairable bases.
 }
 \examples{
-aln <- system.file(file.path("extdata", "fungi_32S.cm"), package = "LSUx")
+aln <- system.file(file.path("extdata", "fungi_32S.stk"), package = "LSUx")
 truncate_alignment(aln, tempfile("trunc", fileext = ".stk"), 1, 500)
 }

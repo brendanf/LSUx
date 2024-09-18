@@ -516,6 +516,11 @@ lsux <- function(
 #'     ss <- "..(((.....[[...<<<<<___>>>>>.[[.<<<___>>>.]"
 #'     repair_unmatched_secondary_structure(ss)
 repair_unmatched_secondary_structure <- function(ss) {
+    UseMethod("repair_unmatched_secondary_structure", ss)
+}
+
+#' @export
+repair_unmatched_secondary_structure.character <- function(ss) {
     assertthat::assert_that(assertthat::is.string(ss))
     this_ss <- ss
     changed <- TRUE
@@ -549,6 +554,13 @@ repair_unmatched_secondary_structure <- function(ss) {
     )
 }
 
+#' @export
+repair_unmatched_secondary_structure.BString <- function(ss) {
+    Biostrings::BString(
+        repair_unmatched_secondary_structure.character(as.character(ss))
+    )
+}
+
 #' Truncate an annotated Stockholm alignment file with secondary structure
 #'
 #' Simply truncating a Stockholm alignment file that includes secondary
@@ -556,8 +568,9 @@ repair_unmatched_secondary_structure <- function(ss) {
 #' of a pair is removed. This function converts these half-pairs to "X",
 #' indicating unpairable bases.
 #'
-#' @param alnfile
-#' (`character` filename or [`connection`])
+#' @param aln
+#' (`character` filename, [`connection`], or
+#' [`StockholmMultipleAlignment`][inferrnal::StockholmMultipleAlignment-class])
 #' the stockholm alignment to be truncated.
 #' @param outfile
 #' (`character` filename or [`connection`])
@@ -570,23 +583,29 @@ repair_unmatched_secondary_structure <- function(ss) {
 #' (`integer` scalar)
 #' last base to include in the truncated alignment.
 #'
-#' @return `NULL` (invisibly).
+#' @return the truncated alignment as a
+#' [`StockholmMultipleAlignment`][inferrnal::StockholmMultipleAlignment-class]
+#' object, or if outfile is given then `NULL` (invisibly).
 #' @export
 #'
 #' @examples
-#' aln <- system.file(file.path("extdata", "fungi_32S.cm"), package = "LSUx")
+#' aln <- system.file(file.path("extdata", "fungi_32S.stk"), package = "LSUx")
 #' truncate_alignment(aln, tempfile("trunc", fileext = ".stk"), 1, 500)
-truncate_alignment <- function(alnfile, outfile, start = 1L, stop = 1000000L) {
-    if (methods::is(alnfile, "connection")) {
-        assertthat::assert_that(summary(alnfile)[["can read"]] == "yes")
-    } else if (is.character(alnfile)) {
-        assertthat::assert_that(
-            assertthat::is.string(alnfile),
-            assertthat::is.readable(alnfile)
-        )
-        alnfile <- file(alnfile)
-    } else {
-        stop("'alnfile' should be a file name or readable connection")
+truncate_alignment <- function(aln, outfile = NULL, start = 1L, stop = 1000000L) {
+    if (!methods::is(aln, "StockholmMultipleAlignment")) {
+        if (methods::is(aln, "connection")) {
+            assertthat::assert_that(summary(aln)[["can read"]] == "yes")
+        } else if (is.character(aln)) {
+            assertthat::assert_that(
+                assertthat::is.string(aln),
+                assertthat::is.readable(aln)
+            )
+            aln <- file(aln)
+        } else {
+            stop("'aln' should be a file name, readable connection, or ",
+                 "StockholmMultipleAlignment.")
+        }
+        aln <- inferrnal::read_stockholm_msa(aln)
     }
 
     if (methods::is(outfile, "connection")) {
@@ -600,32 +619,21 @@ truncate_alignment <- function(alnfile, outfile, start = 1L, stop = 1000000L) {
             dir.exists(dirname(outfile))
         )
         outfile <- file(outfile, "wt")
-    } else {
+    } else if (!is.null(outfile)) {
         stop("'outfile' should be a file name or writeable connection")
     }
 
-    on.exit(close(outfile))
-
-    handle_line <- function(x, pos) {
-        # truncate sequences, column annotations, and residue annotations
-        if (grepl("^(#=(GC|GR +[^ ]+) +[^ ]+|[^# ][^ ]*) +.+$", x)) {
-            x <- stringr::str_match(
-                x,
-                "^((#=(GC|GR [^ ]+) +[^ ]+|[^# ][^ ]*) +)(.+)$"
-            )
-            x <- paste0(x[1,2], substr(x[1,5], start = start, stop = stop))
-            # repair secondary structure annotations
-            if (startsWith(x, "#=GC SS_cons ") | startsWith(x, "#=GR SS ")) {
-                x <- repair_unmatched_secondary_structure(x)
-            }
-        }
-        writeLines(x, outfile)
+    if (!is.null(outfile)) on.exit(close(outfile))
+    
+    aln <- IRanges::narrow(aln, start = start, end = stop)
+    if ("SS_cons" %in% names(aln@GC)) {
+        aln@GC$SS_cons <- repair_unmatched_secondary_structure(aln@GC$SS_cons)
     }
-
-    readr::read_lines_chunked(
-        file = alnfile,
-        chunk_size = 1,
-        callback = readr::SideEffectChunkCallback$new(handle_line)
-    )
-    invisible(NULL)
+    
+    if (is.null(outfile)) {
+        aln
+    } else {
+        inferrnal::writeStockholmMultipleAlignment(aln, outfile)
+        invisible(NULL)
+    }
 }

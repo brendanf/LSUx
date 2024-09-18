@@ -31,6 +31,6 @@ test_that(
     "truncate_alignment rejects bad connections",
     {
         expect_error(truncate_alignment(3, test_out, 1, 500))
-        expect_error(truncate_alignment(test_in, NULL, 1, 500))
+        expect_error(truncate_alignment(test_in, NA, 1, 500))
     }
 )
