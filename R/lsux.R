@@ -161,10 +161,12 @@ map_position <- function(alignment, x) {
     UseMethod("map_position")
 }
 
+#' @export
 map_position.MultipleAlignment <- function(alignment, x) {
     map_position.character(as.character(alignment), x)
 }
 
+#' @export
 map_position.character <- function(alignment, x) {
     if (length(x) == 1 && is.na(x)) return(rep(NA_integer_, length(alignment)))
     widths <- unique(nchar(alignment))
@@ -185,6 +187,7 @@ extract_rf_region <- function(rf, n, names) {
     UseMethod("extract_rf_region")
 }
 
+#' @export
 extract_rf_region.character <- function(rf, n, names){
     assertthat::assert_that(
         assertthat::is.string(rf),
@@ -204,6 +207,7 @@ extract_rf_region.character <- function(rf, n, names){
     out
 }
 
+#' @export
 extract_rf_region.XString <- function(rf, n, names) {
     extract_rf_region.character(as.character(rf), n, names)
 }
@@ -219,6 +223,7 @@ extract_LSU <- function(aln, rf, include_incomplete = FALSE, ...) {
     UseMethod("extract_LSU")
 }
 
+#' @export
 extract_LSU.MultipleAlignment <-
     function(aln, rf, include_incomplete = FALSE, ...) {
 
@@ -231,6 +236,7 @@ extract_LSU.MultipleAlignment <-
     )
 }
 
+#' @export
 extract_LSU.character = function(aln, rf, include_incomplete = FALSE,
                                     seq_id = names(aln),
                                     length = gap_free_width(aln),

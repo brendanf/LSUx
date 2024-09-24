@@ -160,6 +160,7 @@ protect_names <- function(seq) {
     UseMethod("protect_names")
 }
 
+#' @export
 protect_names.ShortRead <- function(seq) {
     seq_id <- as.character(ShortRead::id(seq))
     seq@id <- Biostrings::BStringSet(as.character(seq_along(seq)))
@@ -170,6 +171,7 @@ protect_names.ShortRead <- function(seq) {
     )
 }
 
+#' @export
 protect_names.default <- function(seq) {
     seq_id <- names(seq)
     names(seq) <- as.character(seq_along(seq))
@@ -180,6 +182,7 @@ protect_names.default <- function(seq) {
     )
 }
 
+#' @export
 protect_names.character <- function(seq) {
     if (length(seq) == 1 && file.exists(seq)) {
         seq <- tryCatch(
