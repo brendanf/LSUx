@@ -1,6 +1,12 @@
 # Development version
 
 * Added tests for most functionality.
+* Reimplemented `truncate_alignment()` using `narrow()` method for Stockholm
+  alignments from `inferrnal` 0.99.8.  It now handles interleaved Stockholm
+  files.
+* Added `find_amplicon()` to locate and mark or extract the region defined by a
+  primer pair. Also exported are helper functions `find_primer()` and
+  `gap_fill()`.
 
 # LSUx 0.99.6
 

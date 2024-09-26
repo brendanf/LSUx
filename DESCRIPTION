@@ -19,26 +19,24 @@ Imports:
     ShortRead,
     dplyr,
     futile.logger,
-    inferrnal (>= 0.99.7),
+    inferrnal (>= 0.99.8),
     IRanges,
     methods,
     purrr,
-    readr,
     rlang,
     stats,
     stringr,
     stringi,
     tibble,
     tidyr,
-    tidyselect,
-    utils
+    tidyselect
 Suggests:
     rITSx (>= 0.0.5),
     knitr,
     rmarkdown,
     covr,
     testthat (>= 2.1.0)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 biocViews:
     SequenceMatching,
     ThirdPartyClient,
@@ -55,3 +53,4 @@ Remotes:
     brendanf/rITSx
 Depends: 
     R (>= 4.1)
+Roxygen: list(markdown = TRUE)

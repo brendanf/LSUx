@@ -18,9 +18,9 @@ lsux(
 }
 \arguments{
 \item{seq}{(single filename readable by
-\code{\link[Biostrings:XStringSet-io]{readBStringSet}},
-\code{\link[Biostrings]{XStringSet-class}},
-\code{\link[ShortRead]{ShortRead-class}},
+\code{\link[Biostrings:XStringSet-io]{readBStringSet()}},
+object of class \code{\link[Biostrings:XStringSet-class]{Biostrings::XStringSet}}
+or \code{\link[ShortRead:ShortRead-class]{ShortRead::ShortRead}},
 or \code{character} vector) sequences
 to extract regions from}
 
@@ -30,42 +30,42 @@ to extract regions from}
 (5.8S, ITS2, and LSU)}
 
 \item{glocal}{(\code{logical} scalar) if \code{TRUE}, use glocal alignment in
-\code{\link[inferrnal]{cmsearch}}}
+\code{\link[inferrnal:cmsearch]{inferrnal::cmsearch()}}}
 
 \item{global}{(\code{logical} scalar) if \code{TRUE}, use global alignment in
-\code{\link[inferrnal]{cmalign}}}
+\code{\link[inferrnal:cmalign]{inferrnal::cmalign()}}}
 
 \item{ITS1}{(\code{logical} scalar) if \code{TRUE}, include sequence fragment
 before 5.8S (if any) as ITS1}
 
 \item{cpu}{(\code{integer} scalar) number of threads to use in Infernal
 calls.  If length is greater than 1, then if
-\code{\link[inferrnal]{cmalign}} fails, it will be retried with
+\code{\link[inferrnal:cmalign]{inferrnal::cmalign()}} fails, it will be retried with
 subsequent values.}
 
 \item{mxsize}{(\code{double} scalar or vector) passed on to
-\code{\link[inferrnal]{cmalign}}.  If length is greater than 1, then if
-\code{\link[inferrnal]{cmalign}} fails, it will be retried with
+\code{\link[inferrnal:cmalign]{inferrnal::cmalign()}}.  If length is greater than 1, then if
+\code{\link[inferrnal:cmalign]{inferrnal::cmalign()}} fails, it will be retried with
 subsequent values.}
 
 \item{quiet}{(\code{logical} scalar) passed on to
-\code{\link[inferrnal]{cmsearch}}}
+\code{\link[inferrnal:cmsearch]{inferrnal::cmsearch()}}}
 }
 \value{
-a \code{\link[tibble]{tibble}} with one row for each region found for
-    each input sequence.
-    The columns are: \describe{
-        \item{\code{seq_id} (\code{character})}{ the sequence name from
-            \code{seq}}
-        \item{\code{length} (\code{integer})}{ the length of the original
-            sequence in base pairs}
-        \item{\code{region} (\code{character})}{ the name of the found
-            domain. Can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"},
-            \code{"V2"}, \code{"LSU2"}, \code{"V3"}, etc.}
-        \item{\code{start} (\code{integer})}{the starting base for that
-            domain in this sequence.}
-        \item{\code{end} (\code{integer})}{as \code{start}, but giving the
-            end base for the domain.}}
+a \code{\link[tibble:tibble]{tibble::tibble}} with one row for each region found for
+each input sequence.
+The columns are: \describe{
+\item{\code{seq_id} (\code{character})}{ the sequence name from
+\code{seq}}
+\item{\code{length} (\code{integer})}{ the length of the original
+sequence in base pairs}
+\item{\code{region} (\code{character})}{ the name of the found
+domain. Can be \code{"5_8S"}, \code{"ITS2"}, \code{"LSU1"},
+\code{"V2"}, \code{"LSU2"}, \code{"V3"}, etc.}
+\item{\code{start} (\code{integer})}{the starting base for that
+domain in this sequence.}
+\item{\code{end} (\code{integer})}{as \code{start}, but giving the
+end base for the domain.}}
 }
 \description{
 Extracts alternating variable and conserved domains from the contiguous rDNA
@@ -82,13 +82,13 @@ discarded (\code{ITS1 = FALSE}).  Input sequences should not extend past the
 end of the 32S model at the 3' end.
 
 LSUx requires two covariance models: one for 5.8S, which is used in
-\code{\link[inferrnal]{cmsearch}}, and one for 32S, which is used in
-\code{\link[inferrnal]{cmalign}}.
+\code{\link[inferrnal:cmsearch]{inferrnal::cmsearch()}}, and one for 32S, which is used in
+\code{\link[inferrnal:cmalign]{inferrnal::cmalign()}}.
 
 The 5.8S model can be
 \href{https://rfam.xfam.org/family/RF00002}{RF00002 from Rfam} (the default),
 or an equivalent.  It must be calibrated using \code{cmcalibrate} from
-Infernal.
+Infernal (e.g., via \code{\link[inferrnal:cmcalibrate]{inferrnal::cmcalibrate()}}).
 
 The 32S model must include annotations in the reference line ("#=GC RF" in
 the seed alignment) to distinguish conserved and variable regions. The
@@ -102,10 +102,8 @@ Two example models are included,
 both based on the
 \href{https://github.com/rdpstaff/fungene_pipeline/blob/master/resources/RRNA_28S/model.cm}{RDP fungal LSU CM},
 and annotated with variable regions according to Raué (1988).
-The first, \code{system.file(file.path("extdata", "fungal_32S.cm"),
-package = "LSUx")}, includes the full LSU region.  The second,
-\code{system.file(file.path("extdata", "fungal_32S_LR5.cm"),
-package = "LSUx")}, is truncated at the binding site of the LR5 primer, and
+The first, \code{system.file(file.path("extdata", "fungal_32S.cm"), package = "LSUx")}, includes the full LSU region.  The second,
+\code{system.file(file.path("extdata", "fungal_32S_LR5.cm"), package = "LSUx")}, is truncated at the binding site of the LR5 primer, and
 should be faster for input sequences which do not extend past that point.
 The seed alignments are also provided.
 
