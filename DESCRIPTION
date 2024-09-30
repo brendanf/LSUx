@@ -1,6 +1,6 @@
 Package: LSUx
 Title: Cut rDNA Sequences Into Domains Using Covariance Models
-Version: 0.99.7
+Version: 0.99.8
 Authors@R: 
     person(given = "Brendan",
            family = "Furneaux",

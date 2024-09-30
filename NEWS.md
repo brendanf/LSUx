@@ -1,4 +1,8 @@
-# Development version
+# LSUx 0.99.8
+
+* Fix a bug in `find_amplicon()` when marking the primer locations.
+
+# LSUx 0.99.7
 
 * Added tests for most functionality.
 * Reimplemented `truncate_alignment()` using `narrow()` method for Stockholm

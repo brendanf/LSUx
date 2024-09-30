@@ -127,7 +127,7 @@ mark_ref_line <- function(aln, start, end, mark_char) {
             Biostrings::consensusString() |>
             chartr(old = "-", new = ".")
     } else {
-        if (grepl(mark_char, aln@GC$RF)) {
+        if (grepl(mark_char, aln@GC$RF, fixed = TRUE)) {
             warning("warning:reference line of supplied alignment includes",
                     "character", shQuote(mark_char), ".")
         }
